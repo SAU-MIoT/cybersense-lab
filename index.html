@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SARGEM CyberSense Lab | SAÜ Bilgisayar Mühendisliği</title>
+  <meta name="description" content="Sakarya Üniversitesi SARGEM CyberSense Araştırma Laboratuvarı — Siber güvenlik, yapay zeka ve akıllı sistemler.">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── VARIABLES ────────────────────────────────── */
+    :root {
+      --navy:       #0a1628;
+      --navy-mid:   #0f2040;
+      --navy-light: #1a3358;
+      --cyan:       #00c8e8;
+      --cyan-dim:   #0097b2;
+      --white:      #ffffff;
+      --gray-light: #f4f7fc;
+      --gray-mid:   #8899aa;
+      --border:     rgba(0,200,232,0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #1a1a2e; margin: 0; }
+
+    /* ── TOP BAR ──────────────────────────────────── */
+    .top-bar { background: var(--navy); padding: 6px 0; font-size: 12px; }
+    .top-bar a { color: rgba(255,255,255,.55); text-decoration: none; margin: 0 8px; transition: color .2s; }
+    .top-bar a:hover { color: var(--cyan); }
+    .top-bar i { margin-right: 4px; }
+
+    /* ── HEADER ───────────────────────────────────── */
+    .site-header { background: var(--navy-mid); padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .hdr-logo-wrap { display: flex; align-items: center; gap: 14px; }
+    .hdr-monogram {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--cyan); display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: var(--navy); flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(0,200,232,.2);
+    }
+    .hdr-text-uni   { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: .3px; line-height: 1.2; }
+    .hdr-text-fac   { font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.4; }
+    .hdr-text-lab   { display: flex; align-items: center; gap: 7px; margin-top: 3px; color: var(--cyan); font-size: 14px; font-weight: 600; }
+    .lab-badge      { background: var(--cyan); color: var(--navy); font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; letter-spacing: .5px; }
+    .hdr-actions    { display: flex; align-items: center; gap: 10px; }
+    .hdr-search     { display: flex; align-items: center; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 8px; overflow: hidden; }
+    .hdr-search input { background: none; border: none; outline: none; color: #fff; padding: 7px 12px; font-size: 13px; width: 190px; font-family: inherit; }
+    .hdr-search input::placeholder { color: rgba(255,255,255,.35); }
+    .hdr-search button { background: var(--cyan); border: none; color: var(--navy); padding: 7px 13px; cursor: pointer; font-size: 13px; }
+    .btn-lang { background: var(--cyan); color: var(--navy); border: none; padding: 7px 15px; border-radius: 7px; font-weight: 800; font-size: 13px; cursor: pointer; text-decoration: none; }
+
+    /* ── NAVBAR ───────────────────────────────────── */
+    .main-navbar { background: var(--navy); position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--cyan); }
+    .main-navbar .navbar-brand { color: var(--cyan) !important; font-weight: 700; font-size: 15px; display: none; }
+    .main-navbar .nav-link {
+      color: rgba(255,255,255,.82) !important; font-size: 13.5px; font-weight: 500;
+      padding: 14px 15px !important; position: relative; transition: color .2s, background .2s;
+    }
+    .main-navbar .nav-link:hover,
+    .main-navbar .nav-link.active { color: var(--cyan) !important; background: rgba(0,200,232,.07); }
+    .main-navbar .nav-link::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--cyan); transform: scaleX(0); transition: transform .2s;
+    }
+    .main-navbar .nav-link:hover::after,
+    .main-navbar .nav-link.active::after { transform: scaleX(1); }
+    .main-navbar .dropdown-menu { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 8px; min-width: 190px; padding: 4px 0; }
+    .main-navbar .dropdown-item { color: rgba(255,255,255,.78); font-size: 13px; padding: 9px 16px; }
+    .main-navbar .dropdown-item:hover { background: rgba(0,200,232,.1); color: var(--cyan); }
+    .navbar-toggler { border-color: var(--border); }
+    .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+    .nav-highlight { color: var(--cyan) !important; font-weight: 600 !important; }
+
+    /* ── HERO ─────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #0a2340 55%, #0d2d52 100%);
+      position: relative; overflow: hidden; padding: 80px 0 65px; min-height: 430px; display: flex; align-items: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300c8e8' fill-opacity='0.035'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .hero-particle {
+      position: absolute; background: var(--cyan); border-radius: 50%;
+      animation: float-p linear infinite; opacity: 0;
+    }
+    @keyframes float-p {
+      0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+      8%   { opacity: .45; }
+      92%  { opacity: .45; }
+      100% { transform: translateY(-30px) scale(1); opacity: 0; }
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-live-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,200,232,.1); border: 1px solid rgba(0,200,232,.28);
+      padding: 6px 14px; border-radius: 20px;
+      color: var(--cyan); font-size: 12px; font-weight: 600; letter-spacing: .4px; margin-bottom: 22px;
+    }
+    .hero-live-dot { width: 7px; height: 7px; background: var(--cyan); border-radius: 50%; animation: blink-dot 1.5s ease-in-out infinite; }
+    @keyframes blink-dot { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.2; transform:scale(.7); } }
+    .hero-title { font-size: clamp(28px,4.5vw,52px); font-weight: 800; color: #fff; line-height: 1.12; margin-bottom: 14px; }
+    .hero-title span { color: var(--cyan); }
+    .hero-sub { color: rgba(255,255,255,.58); font-size: 15.5px; line-height: 1.7; margin-bottom: 34px; max-width: 500px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-cyber {
+      background: var(--cyan); color: var(--navy); border: none; padding: 12px 28px;
+      border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; transition: transform .2s, box-shadow .2s; cursor: pointer;
+    }
+    .btn-cyber:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,200,232,.4); color: var(--navy); }
+    .btn-outline-cyber {
+      background: transparent; border: 1.5px solid var(--cyan); color: var(--cyan);
+      padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: background .2s;
+    }
+    .btn-outline-cyber:hover { background: rgba(0,200,232,.1); color: var(--cyan); }
+    .hero-visual { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; }
+    .shield-wrap { width: 210px; height: 210px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .shield-ring {
+      position: absolute; border: 1.5px solid rgba(0,200,232,.28); border-radius: 50%;
+      animation: spin-ring linear infinite;
+    }
+    .shield-ring:nth-child(1) { width: 210px; height: 210px; animation-duration: 22s; }
+    .shield-ring:nth-child(2) { width: 165px; height: 165px; animation-duration: 16s; animation-direction: reverse; border-color: rgba(0,200,232,.18); }
+    .shield-ring:nth-child(3) { width: 120px; height: 120px; animation-duration: 11s; border-color: rgba(0,200,232,.12); }
+    .shield-ring::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 9px; height: 9px; background: var(--cyan); border-radius: 50%; }
+    @keyframes spin-ring { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    .shield-icon { font-size: 68px; color: var(--cyan); animation: glow-pulse 3.5s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(0,200,232,.45)); }
+    @keyframes glow-pulse { 0%,100%{ filter: drop-shadow(0 0 14px rgba(0,200,232,.4)); } 50%{ filter: drop-shadow(0 0 34px rgba(0,200,232,.85)); } }
+
+    /* ── STATS BAR ────────────────────────────────── */
+    .stats-bar { background: var(--navy-mid); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 0; }
+    .stat-num { font-size: 30px; font-weight: 800; color: var(--cyan); line-height: 1; display: block; }
+    .stat-lbl { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 4px; display: block; font-weight: 500; letter-spacing: .3px; }
+    .stat-div { border-left: 1px solid var(--border); height: 38px; }
+
+    /* ── SECTIONS ─────────────────────────────────── */
+    section { padding: 60px 0; }
+    .sec-tag { display: inline-block; color: var(--cyan-dim); font-size: 11px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 8px; }
+    .sec-title { font-size: clamp(21px,3vw,30px); font-weight: 800; color: var(--navy); line-height: 1.2; margin: 0; }
+    .sec-line { width: 46px; height: 3px; background: var(--cyan); border-radius: 2px; margin-top: 12px; }
+
+    /* ── NEWS CARDS ───────────────────────────────── */
+    .news-bg { background: var(--gray-light); }
+    .news-card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e6edf5; transition: transform .22s, box-shadow .22s; height: 100%; }
+    .news-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(10,22,40,.1); }
+    .news-card-img { height: 175px; background: linear-gradient(135deg, var(--navy-mid), var(--navy-light)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .news-card-img i { font-size: 44px; color: var(--cyan); opacity: .45; }
+    .news-date { position: absolute; bottom: 12px; left: 12px; background: var(--cyan); color: var(--navy); padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .nc-body { padding: 18px; }
+    .nc-tag { font-size: 10.5px; font-weight: 700; color: var(--cyan-dim); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .nc-title { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.45; margin-bottom: 8px; }
+    .nc-text { font-size: 12.5px; color: #666; line-height: 1.55; margin: 0; }
+
+    /* ── WIDGET ───────────────────────────────────── */
+    .widget { background: #fff; border-radius: 12px; border: 1px solid #e6edf5; overflow: hidden; margin-bottom: 22px; }
+    .widget-hdr { background: var(--navy-mid); padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; }
+    .widget-hdr-title { color: #fff; font-size: 13.5px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .widget-hdr-title i { color: var(--cyan); }
+    .widget-all { color: var(--cyan); font-size: 11px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: .4px; }
+    .widget-all:hover { text-decoration: underline; color: var(--cyan); }
+    .w-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 18px; border-bottom: 1px solid #f0f4f9; transition: background .18s; }
+    .w-item:last-child { border-bottom: none; }
+    .w-item:hover { background: #f8fbff; }
+    .w-date { background: var(--navy-mid); color: var(--cyan); padding: 5px 8px; border-radius: 8px; font-size: 10.5px; font-weight: 700; text-align: center; min-width: 42px; flex-shrink: 0; line-height: 1.3; }
+    .w-title { font-size: 12.5px; font-weight: 600; color: var(--navy); margin: 0 0 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+    .w-title a { color: inherit; text-decoration: none; }
+    .w-title a:hover { color: var(--cyan-dim); }
+    .w-text { font-size: 11px; color: #888; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── CAROUSEL ─────────────────────────────────── */
+    .main-carousel .carousel-item > div { border-radius: 12px; height: 300px; }
+    .carousel-caption-over { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 18px; background: linear-gradient(transparent, rgba(10,22,40,.88)); border-radius: 0 0 12px 12px; }
+    .carousel-caption-over h5 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .carousel-caption-over p { font-size: 12px; color: rgba(255,255,255,.68); margin: 0; }
+    .carousel-control-prev, .carousel-control-next { width: 36px; height: 36px; background: rgba(0,200,232,.85); border-radius: 50%; top: 50%; transform: translateY(-50%); opacity: 1; }
+    .carousel-control-prev { left: 10px; }
+    .carousel-control-next { right: 10px; }
+
+    /* ── RESEARCH CARDS ───────────────────────────── */
+    .research-card { background: var(--gray-light); border: 1.5px solid transparent; border-radius: 16px; padding: 30px 22px; text-align: center; transition: all .28s; height: 100%; }
+    .research-card:hover { border-color: var(--cyan); background: #fff; transform: translateY(-4px); box-shadow: 0 14px 42px rgba(0,200,232,.1); }
+    .rc-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--navy-mid), var(--navy-light)); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 28px; color: var(--cyan); transition: all .28s; }
+    .research-card:hover .rc-icon { background: var(--cyan); color: var(--navy); }
+    .research-card h5 { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .research-card p { font-size: 12.5px; color: #666; line-height: 1.65; margin: 0; }
+
+    /* ── TEAM ─────────────────────────────────────── */
+    .team-bg { background: var(--gray-light); }
+    .team-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #e6edf5; transition: all .28s; text-align: center; height: 100%; }
+    .team-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(10,22,40,.1); }
+    .tc-avatar { width: 100%; height: 195px; background: linear-gradient(155deg, var(--navy-mid), var(--navy-light)); display: flex; align-items: center; justify-content: center; position: relative; }
+    .tc-avatar-icon { width: 78px; height: 78px; border-radius: 50%; background: rgba(0,200,232,.13); border: 2px solid rgba(0,200,232,.3); display: flex; align-items: center; justify-content: center; font-size: 30px; color: var(--cyan); }
+    .tc-role { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--cyan); color: var(--navy); padding: 3px 12px; border-radius: 10px; font-size: 9.5px; font-weight: 700; white-space: nowrap; }
+    .tc-body { padding: 18px; }
+    .tc-name { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .tc-exp { font-size: 11.5px; color: #888; margin-bottom: 12px; }
+    .tc-links { display: flex; justify-content: center; gap: 8px; }
+    .tc-link { width: 32px; height: 32px; border-radius: 8px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--navy-mid); font-size: 13px; text-decoration: none; transition: all .2s; }
+    .tc-link:hover { background: var(--navy-mid); color: var(--cyan); }
+
+    /* ── PUBLICATIONS ─────────────────────────────── */
+    .pub-item { padding: 18px 22px; border: 1px solid #e6edf5; border-radius: 12px; margin-bottom: 12px; background: #fff; transition: all .2s; display: flex; gap: 14px; align-items: flex-start; }
+    .pub-item:hover { border-color: var(--cyan); box-shadow: 0 4px 18px rgba(0,200,232,.08); }
+    .pub-ico { width: 42px; height: 42px; flex-shrink: 0; background: linear-gradient(135deg, var(--navy-mid), var(--navy-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--cyan); font-size: 17px; }
+    .pub-title { font-size: 13.5px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .pub-authors { font-size: 11.5px; color: #888; margin-bottom: 6px; }
+    .pub-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pub-badge { font-size: 10.5px; padding: 2px 9px; border-radius: 5px; font-weight: 600; }
+    .badge-j { background: #e8f5e9; color: #2e7d32; }
+    .badge-c { background: #e3f2fd; color: #1565c0; }
+    .badge-y { background: #fff3e0; color: #e65100; }
+
+    /* ── PROJECTS ─────────────────────────────────── */
+    .proj-bg { background: var(--gray-light); }
+    .proj-card { background: #fff; border-radius: 12px; border: 1px solid #e6edf5; padding: 22px; height: 100%; transition: all .2s; }
+    .proj-card:hover { border-color: var(--cyan); box-shadow: 0 8px 26px rgba(0,200,232,.08); }
+    .proj-status { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
+    .s-active    { background: #e8f5e9; color: #2e7d32; }
+    .s-done      { background: #f3e5f5; color: #6a1b9a; }
+    .s-plan      { background: #e3f2fd; color: #1565c0; }
+    .proj-title  { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .proj-desc   { font-size: 12.5px; color: #666; line-height: 1.6; margin-bottom: 14px; }
+    .proj-meta   { display: flex; gap: 16px; font-size: 11.5px; color: #888; }
+    .proj-meta i { color: var(--cyan-dim); margin-right: 3px; }
+    .proj-prog-lbl { font-size: 11px; color: #888; margin-bottom: 4px; display: flex; justify-content: space-between; margin-top: 12px; }
+    .progress { height: 6px; border-radius: 3px; background: #edf2f7; }
+    .progress-bar { background: linear-gradient(90deg, var(--cyan-dim), var(--cyan)); border-radius: 3px; }
+
+    /* ── PARTNERS ─────────────────────────────────── */
+    .partner-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      height: 48px; padding: 0 18px; border-radius: 8px;
+      background: var(--gray-light); border: 1px solid #e6edf5;
+      font-size: 13px; font-weight: 600; color: var(--navy-mid);
+      filter: grayscale(.8); opacity: .55; transition: all .3s;
+    }
+    .partner-pill:hover { filter: none; opacity: 1; border-color: var(--cyan); }
+    .partner-pill i { color: var(--cyan-dim); font-size: 15px; }
+
+    /* ── FOOTER ───────────────────────────────────── */
+    .site-footer { background: var(--navy); color: rgba(255,255,255,.58); padding: 50px 0 0; }
+    .ft-brand-name { font-size: 18px; font-weight: 800; color: #fff; }
+    .ft-brand-sub  { font-size: 11.5px; color: rgba(255,255,255,.45); }
+    .ft-about { font-size: 13px; line-height: 1.75; max-width: 300px; color: rgba(255,255,255,.55); margin-top: 12px; }
+    .ft-section-title { font-size: 12.5px; font-weight: 700; color: #fff; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .ft-links { list-style: none; padding: 0; margin: 0; }
+    .ft-links li { margin-bottom: 8px; }
+    .ft-links a { color: rgba(255,255,255,.52); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color .2s; }
+    .ft-links a i { color: var(--cyan); font-size: 10px; }
+    .ft-links a:hover { color: var(--cyan); }
+    .ft-contact-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 13px; }
+    .ft-contact-row i { color: var(--cyan); flex-shrink: 0; margin-top: 2px; }
+    .ft-contact-row a { color: inherit; text-decoration: none; }
+    .ft-bottom { margin-top: 38px; border-top: 1px solid var(--border); padding: 16px 0; font-size: 12px; }
+    .ft-cyan { color: var(--cyan); }
+    .social-row { display: flex; gap: 8px; margin-top: 14px; }
+    .soc-ico { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,.07); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.6); font-size: 14px; text-decoration: none; transition: all .2s; }
+    .soc-ico:hover { background: var(--cyan); color: var(--navy); border-color: var(--cyan); }
+
+    /* ── SCROLL ANIMATIONS ────────────────────────── */
+    .fade-up { opacity: 0; transform: translateY(22px); transition: opacity .55s, transform .55s; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up:nth-child(2) { transition-delay: .08s; }
+    .fade-up:nth-child(3) { transition-delay: .16s; }
+    .fade-up:nth-child(4) { transition-delay: .24s; }
+
+    /* ── BACK TO TOP ──────────────────────────────── */
+    #btt { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; background: var(--cyan); color: var(--navy); border: none; border-radius: 12px; font-size: 17px; cursor: pointer; z-index: 999; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(0,200,232,.4); transition: transform .2s; }
+    #btt:hover { transform: translateY(-2px); }
+    #btt.show { display: flex; }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 991px) {
+      .main-navbar .navbar-brand { display: block; }
+      .hdr-search { display: none; }
+    }
+    @media (max-width: 767px) {
+      .hero { padding: 48px 0 40px; }
+      .hero-visual { margin-top: 36px; }
+      .stat-div { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     TOP BAR
+════════════════════════════════════════════════ -->
+<div class="top-bar">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-1">
+    <div>
+      <a href="https://www.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-university"></i>Sakarya Üniversitesi</a>
+      <a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-laptop-code"></i>Bilgisayar Mühendisliği</a>
+      <a href="#" target="_blank" rel="noopener"><i class="fa fa-flask"></i>SARGEM</a>
+    </div>
+    <div>
+      <a href="https://github.com/" target="_blank" rel="noopener"><i class="fab fa-github"></i>GitHub</a>
+      <a href="#" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i>LinkedIn</a>
+      <a href="mailto:cybersense@sakarya.edu.tr"><i class="fa fa-envelope"></i>cybersense@sakarya.edu.tr</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8 mb-2 mb-lg-0">
+        <div class="hdr-logo-wrap">
+          <div class="hdr-monogram">S</div>
+          <div>
+            <div class="hdr-text-uni">SAKARYA ÜNİVERSİTESİ</div>
+            <div class="hdr-text-fac">Bilgisayar ve Bilişim Bilimleri Fakültesi &nbsp;·&nbsp; Bilgisayar Mühendisliği Bölümü</div>
+            <div class="hdr-text-lab">
+              <i class="fa fa-shield-halved"></i>
+              SARGEM CyberSense Lab
+              <span class="lab-badge">ARAŞTIRMA LABORATUVARI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="hdr-actions justify-content-lg-end">
+          <div class="hdr-search me-2">
+            <input type="text" id="searchInput" placeholder="Ara..." aria-label="Arama">
+            <button onclick="doSearch()" aria-label="Ara"><i class="fa fa-search"></i></button>
+          </div>
+          <a href="#" class="btn-lang">EN</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════ -->
+<nav class="main-navbar navbar navbar-expand-lg" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="#hero"><i class="fa fa-shield-halved me-2" style="color:var(--cyan)"></i>CyberSense</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse" aria-label="Menü">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navCollapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" href="#hero"><i class="fa fa-home me-1"></i>Ana Sayfa</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Lab Hakkında</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#about">Hakkımızda</a></li>
+            <li><a class="dropdown-item" href="#team">Ekip</a></li>
+            <li><a class="dropdown-item" href="#research">Araştırma Alanları</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#publications">Yayınlar</a></li>
+        <li class="nav-item"><a class="nav-link" href="#projects">Projeler</a></li>
+        <li class="nav-item"><a class="nav-link" href="#news">Haberler</a></li>
+        <li class="nav-item"><a class="nav-link" href="#events">Etkinlikler</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">İletişim</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link nav-highlight" href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener">
+            <i class="fa fa-arrow-up-right-from-square me-1"></i>SAÜ CS
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-particles" id="particles" aria-hidden="true"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7 hero-content">
+        <div class="hero-live-badge">
+          <span class="hero-live-dot"></span>
+          Aktif Araştırma Laboratuvarı — SARGEM
+        </div>
+        <h1 class="hero-title">
+          SARGEM<br><span>CyberSense</span> Lab
+        </h1>
+        <p class="hero-sub">
+          Siber güvenlik, yapay zeka destekli tehdit analizi ve akıllı sistemler alanında
+          öncü araştırmalar yürüten Sakarya Üniversitesi'nin uzmanlaşmış araştırma laboratuvarı.
+        </p>
+        <div class="hero-btns">
+          <a href="#research" class="btn-cyber"><i class="fa fa-flask"></i>Araştırmalarımız</a>
+          <a href="#team" class="btn-outline-cyber"><i class="fa fa-users"></i>Ekibimiz</a>
+        </div>
+      </div>
+      <div class="col-lg-5 hero-visual mt-4 mt-lg-0">
+        <div class="shield-wrap">
+          <div class="shield-ring"></div>
+          <div class="shield-ring"></div>
+          <div class="shield-ring"></div>
+          <i class="fa fa-shield-halved shield-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     STATS BAR
+════════════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="row text-center align-items-center g-3">
+      <div class="col"><span class="stat-num" data-target="12">0</span><span class="stat-lbl">Araştırmacı</span></div>
+      <div class="col-auto d-none d-md-flex align-items-center"><div class="stat-div"></div></div>
+      <div class="col"><span class="stat-num" data-target="47">0</span><span class="stat-lbl">Yayın</span></div>
+      <div class="col-auto d-none d-md-flex align-items-center"><div class="stat-div"></div></div>
+      <div class="col"><span class="stat-num" data-target="8">0</span><span class="stat-lbl">Aktif Proje</span></div>
+      <div class="col-auto d-none d-md-flex align-items-center"><div class="stat-div"></div></div>
+      <div class="col"><span class="stat-num" data-target="5">0</span><span class="stat-lbl">İş Ortağı</span></div>
+      <div class="col-auto d-none d-md-flex align-items-center"><div class="stat-div"></div></div>
+      <div class="col"><span class="stat-num" data-target="2019">2019</span><span class="stat-lbl">Kuruluş Yılı</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HABERLER + SIDEBAR
+════════════════════════════════════════════════ -->
+<section class="news-bg" id="news" style="padding: 48px 0;">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- LEFT: CAROUSEL + NEWS CARDS -->
+      <div class="col-lg-8">
+        <div class="mb-3">
+          <span class="sec-tag">Öne Çıkanlar</span>
+          <h2 class="sec-title" style="font-size:22px;">Haberler &amp; Duyurular</h2>
+          <div class="sec-line"></div>
+        </div>
+
+        <!-- Carousel -->
+        <div id="mainCarousel" class="carousel slide main-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+          </div>
+          <div class="carousel-inner" style="border-radius:12px; overflow:hidden;">
+            <div class="carousel-item active">
+              <div style="height:300px;background:linear-gradient(135deg,#0a1628,#0d2d52);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+                <i class="fa fa-shield-halved" style="font-size:100px;color:rgba(0,200,232,.1);"></i>
+                <div class="carousel-caption-over">
+                  <h5>TÜBİTAK 1001 Projesi Kabul Edildi</h5>
+                  <p>CyberSentinel: Yapay Zeka Tabanlı Ağ Tehdit Algılama Sistemi projemiz TÜBİTAK tarafından desteklenmeye başlandı.</p>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div style="height:300px;background:linear-gradient(135deg,#0d2d52,#1a3358);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+                <i class="fa fa-brain" style="font-size:100px;color:rgba(0,200,232,.1);"></i>
+                <div class="carousel-caption-over">
+                  <h5>IEEE Transactions'da Yayın Kabul Edildi</h5>
+                  <p>Adversarial attack detection araştırmamız IEEE Transactions on Information Forensics and Security dergisinde yayımlanacak.</p>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div style="height:300px;background:linear-gradient(135deg,#0a2340,#0d3060);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+                <i class="fa fa-trophy" style="font-size:100px;color:rgba(0,200,232,.1);"></i>
+                <div class="carousel-caption-over">
+                  <h5>8. Türkiye Siber Güvenlik Zirvesi</h5>
+                  <p>Lab direktörümüz Prof. Dr. İbrahim Özçelik, 2 Haziran'da zirvede araştırma sonuçlarımızı sundu.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev" aria-label="Önceki">
+            <i class="fa fa-chevron-left" style="font-size:13px;color:var(--navy);"></i>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next" aria-label="Sonraki">
+            <i class="fa fa-chevron-right" style="font-size:13px;color:var(--navy);"></i>
+          </button>
+        </div>
+
+        <!-- 3 News Cards -->
+        <div class="row g-3 mt-2">
+          <div class="col-md-4 fade-up">
+            <div class="news-card">
+              <div class="news-card-img"><i class="fa fa-lock"></i><span class="news-date">16 May 2026</span></div>
+              <div class="nc-body">
+                <div class="nc-tag">Duyuru</div>
+                <div class="nc-title">Araştırmacı Pozisyonları Açıldı</div>
+                <p class="nc-text">2026–2027 dönemi için doktora öğrencisi ve araştırmacı pozisyonlarına başvurular başladı.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-up">
+            <div class="news-card">
+              <div class="news-card-img"><i class="fa fa-flag"></i><span class="news-date">10 May 2026</span></div>
+              <div class="nc-body">
+                <div class="nc-tag">Etkinlik</div>
+                <div class="nc-title">SAÜ CyberSense CTF 2026</div>
+                <p class="nc-text">Üniversite geneline açık Capture The Flag yarışması hazırlıkları başladı, takım başvuruları alınıyor.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-up">
+            <div class="news-card">
+              <div class="news-card-img"><i class="fa fa-file-lines"></i><span class="news-date">5 May 2026</span></div>
+              <div class="nc-body">
+                <div class="nc-tag">Yayın</div>
+                <div class="nc-title">IEEE S&amp;P 2026'da Bildiri</div>
+                <p class="nc-text">GNN tabanlı malware sınıflandırma araştırmamız IEEE S&amp;P 2026'da sunulacak.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: WIDGETS -->
+      <div class="col-lg-4">
+        <!-- Duyurular -->
+        <div class="widget">
+          <div class="widget-hdr">
+            <h4 class="widget-hdr-title"><i class="fa fa-bell"></i>Duyurular</h4>
+            <a href="#" class="widget-all">Tümü →</a>
+          </div>
+          <div>
+            <div class="w-item">
+              <div class="w-date">15<br>May</div>
+              <div>
+                <p class="w-title"><a href="#">Araştırmacı Alımı Başvuruları</a></p>
+                <p class="w-text">2026–2027 dönemi için başvurular 31 Mayıs'ta kapanıyor.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date">10<br>May</div>
+              <div>
+                <p class="w-title"><a href="#">TÜBİTAK 2209-A Son Başvuru</a></p>
+                <p class="w-text">Lisans proje başvuruları için son tarih 30 Mayıs 2026.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date">3<br>May</div>
+              <div>
+                <p class="w-title"><a href="#">Seminer: Zero Trust Mimarileri</a></p>
+                <p class="w-text">20 Mayıs'ta Uzm. Dr. Ayşe Kaya konuşmacı olarak katılacak.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date">29<br>Nis</div>
+              <div>
+                <p class="w-title"><a href="#">TEKNOFEST 2026 Bilgilendirmesi</a></p>
+                <p class="w-text">Siber güvenlik kategorisinde ekip oluşturmak isteyenler için.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etkinlikler -->
+        <div class="widget" id="events">
+          <div class="widget-hdr">
+            <h4 class="widget-hdr-title"><i class="fa fa-calendar-days"></i>Etkinlikler</h4>
+            <a href="#" class="widget-all">Tümü →</a>
+          </div>
+          <div>
+            <div class="w-item">
+              <div class="w-date">20<br>May</div>
+              <div>
+                <p class="w-title"><a href="#">Zero Trust Mimarisi Semineri</a></p>
+                <p class="w-text">Saat 14:00 · BBF A-204</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date">15<br>Haz</div>
+              <div>
+                <p class="w-title"><a href="#">SAÜ CyberSense CTF 2026</a></p>
+                <p class="w-text">Üniversite geneli siber güvenlik yarışması.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date">22<br>Haz</div>
+              <div>
+                <p class="w-title"><a href="#">Yıllık Araştırma Çalıştayı</a></p>
+                <p class="w-text">CyberSense Lab yıllık çalıştay ve proje sunumları.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hızlı Bağlantılar -->
+        <div class="widget">
+          <div class="widget-hdr">
+            <h4 class="widget-hdr-title"><i class="fa fa-link"></i>Hızlı Bağlantılar</h4>
+          </div>
+          <div style="padding:12px 18px;">
+            <ul class="ft-links" style="margin:0;">
+              <li><a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>SAÜ Bilgisayar Mühendisliği</a></li>
+              <li><a href="#" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>SARGEM</a></li>
+              <li><a href="#" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>GitHub Organizasyonu</a></li>
+              <li><a href="#" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>Google Scholar Profili</a></li>
+              <li><a href="https://tubitak.gov.tr/" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>TÜBİTAK</a></li>
+              <li><a href="#"><i class="fa fa-angle-right"></i>Lab Tüzüğü (PDF)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     ARAŞTIRMA ALANLARI
+════════════════════════════════════════════════ -->
+<section id="research" style="background:#fff;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="sec-tag">Uzmanlık Alanları</span>
+      <h2 class="sec-title">Araştırma Alanları</h2>
+      <div class="sec-line mx-auto"></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-brain"></i></div>
+          <h5>Yapay Zeka Güvenliği</h5>
+          <p>ML modellerine yönelik adversarial saldırılar ve savunma yöntemleri araştırmaları.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-network-wired"></i></div>
+          <h5>Ağ Güvenliği &amp; IDS</h5>
+          <p>Saldırı tespiti, ağ anomali analizi ve derin paket inceleme sistemleri.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-microchip"></i></div>
+          <h5>IoT Güvenliği</h5>
+          <p>Nesnelerin interneti cihaz güvenlik açıkları ve hafif şifreleme protokolleri.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-bug"></i></div>
+          <h5>Tersine Mühendislik</h5>
+          <p>Malware analizi, binary analiz teknikleri ve otomatik zafiyet keşfi.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-lock"></i></div>
+          <h5>Kriptografi</h5>
+          <p>Post-kuantum kriptografi, hafif şifreleme ve güvenli protokol tasarımı.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-cloud"></i></div>
+          <h5>Bulut &amp; DevSecOps</h5>
+          <p>Konteyner güvenliği, bulut altyapı değerlendirme ve DevSecOps metodolojisi.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-radar fa-circle-nodes"></i></div>
+          <h5>Tehdit İstihbaratı</h5>
+          <p>Otomatik tehdit avcılığı, OSINT araçları ve siber tehdit görselleştirme.</p>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 fade-up">
+        <div class="research-card">
+          <div class="rc-icon"><i class="fa fa-building-shield"></i></div>
+          <h5>Kritik Altyapı</h5>
+          <p>SCADA/ICS sistem güvenliği ve endüstriyel kontrol sistemleri koruması.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     EKİP
+════════════════════════════════════════════════ -->
+<section class="team-bg" id="team">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="sec-tag">Kadromuz</span>
+      <h2 class="sec-title">Araştırma Ekibi</h2>
+      <div class="sec-line mx-auto"></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 fade-up">
+        <div class="team-card">
+          <div class="tc-avatar">
+            <div class="tc-avatar-icon"><i class="fa fa-user-tie"></i></div>
+            <span class="tc-role">Lab Direktörü</span>
+          </div>
+          <div class="tc-body">
+            <div class="tc-name">Prof. Dr. İbrahim Özçelik</div>
+            <div class="tc-exp">Siber Güvenlik · Kriptografi</div>
+            <div class="tc-links">
+              <a href="#" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>
+              <a href="#" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>
+              <a href="#" class="tc-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="tc-link" aria-label="Web"><i class="fa fa-globe"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 fade-up">
+        <div class="team-card">
+          <div class="tc-avatar">
+            <div class="tc-avatar-icon"><i class="fa fa-user-graduate"></i></div>
+            <span class="tc-role">Öğretim Üyesi</span>
+          </div>
+          <div class="tc-body">
+            <div class="tc-name">Doç. Dr. Cüneyt Bayılmış</div>
+            <div class="tc-exp">IoT Güvenliği · Gömülü Sistemler</div>
+            <div class="tc-links">
+              <a href="#" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>
+              <a href="#" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>
+              <a href="#" class="tc-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="tc-link" aria-label="Web"><i class="fa fa-globe"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 fade-up">
+        <div class="team-card">
+          <div class="tc-avatar">
+            <div class="tc-avatar-icon"><i class="fa fa-user"></i></div>
+            <span class="tc-role">Doktora Araştırmacısı</span>
+          </div>
+          <div class="tc-body">
+            <div class="tc-name">Arş. Gör. Ahmet Yılmaz</div>
+            <div class="tc-exp">Ağ Güvenliği · ML Tabanlı IDS</div>
+            <div class="tc-links">
+              <a href="#" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>
+              <a href="#" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>
+              <a href="#" class="tc-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="tc-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 fade-up">
+        <div class="team-card">
+          <div class="tc-avatar">
+            <div class="tc-avatar-icon"><i class="fa fa-user"></i></div>
+            <span class="tc-role">Doktora Araştırmacısı</span>
+          </div>
+          <div class="tc-body">
+            <div class="tc-name">Arş. Gör. Zeynep Demir</div>
+            <div class="tc-exp">Tersine Mühendislik · Malware</div>
+            <div class="tc-links">
+              <a href="#" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>
+              <a href="#" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>
+              <a href="#" class="tc-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="tc-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     YAYINLAR + AKADEMİK SIDEBAR
+════════════════════════════════════════════════ -->
+<section id="publications" style="background:#fff;">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Publications -->
+      <div class="col-lg-8">
+        <div class="mb-4">
+          <span class="sec-tag">Akademik Çıktılar</span>
+          <h2 class="sec-title">Son Yayınlar</h2>
+          <div class="sec-line"></div>
+        </div>
+
+        <div class="pub-item fade-up">
+          <div class="pub-ico"><i class="fa fa-file-pdf"></i></div>
+          <div>
+            <div class="pub-title">Adversarial Attack Detection in Deep Learning Models Using Shapley Values</div>
+            <div class="pub-authors">Yılmaz A., Özçelik İ., Demir Z.</div>
+            <div class="pub-meta">
+              <span class="pub-badge badge-j">IEEE Trans. on Info. Forensics &amp; Security</span>
+              <span class="pub-badge badge-y">2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item fade-up">
+          <div class="pub-ico"><i class="fa fa-file-pdf"></i></div>
+          <div>
+            <div class="pub-title">Lightweight Cryptographic Protocols for Constrained IoT Devices</div>
+            <div class="pub-authors">Bayılmış C., Kaya M., Özçelik İ.</div>
+            <div class="pub-meta">
+              <span class="pub-badge badge-j">Computers &amp; Security</span>
+              <span class="pub-badge badge-y">2025</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item fade-up">
+          <div class="pub-ico"><i class="fa fa-file-lines"></i></div>
+          <div>
+            <div class="pub-title">Automated Malware Classification with Graph Neural Networks</div>
+            <div class="pub-authors">Demir Z., Yılmaz A.</div>
+            <div class="pub-meta">
+              <span class="pub-badge badge-c">IEEE S&amp;P 2025</span>
+              <span class="pub-badge badge-y">2025</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item fade-up">
+          <div class="pub-ico"><i class="fa fa-file-lines"></i></div>
+          <div>
+            <div class="pub-title">SCADA System Vulnerability Analysis Using Coverage-Based Fuzzing</div>
+            <div class="pub-authors">Özçelik İ., Arslan S.</div>
+            <div class="pub-meta">
+              <span class="pub-badge badge-c">ACM CCS 2025</span>
+              <span class="pub-badge badge-y">2025</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-item fade-up">
+          <div class="pub-ico"><i class="fa fa-file-pdf"></i></div>
+          <div>
+            <div class="pub-title">Zero-Day Vulnerability Discovery via Deep Reinforcement Learning</div>
+            <div class="pub-authors">Yılmaz A., Bayılmış C.</div>
+            <div class="pub-meta">
+              <span class="pub-badge badge-j">Expert Systems With Applications</span>
+              <span class="pub-badge badge-y">2024</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <a href="#" class="btn-outline-cyber" style="color:var(--navy-mid);border-color:var(--navy-mid);">
+            <i class="fa fa-list"></i>Tüm Yayınları Gör
+          </a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div class="mb-4">
+          <span class="sec-tag">Akademik Çalışmalar</span>
+          <h2 class="sec-title" style="font-size:22px;">Ödüller &amp; Öne Çıkanlar</h2>
+          <div class="sec-line"></div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-hdr">
+            <h4 class="widget-hdr-title"><i class="fa fa-trophy"></i>Başarılar</h4>
+          </div>
+          <div>
+            <div class="w-item">
+              <div class="w-date" style="background:linear-gradient(135deg,#ff6b35,#ff8c42);color:#fff;">2025</div>
+              <div>
+                <p class="w-title">TÜBİTAK Teşvik Ödülü</p>
+                <p class="w-text">IoT güvenliği projesiyle araştırma teşvik ödülü kazanıldı.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date" style="background:linear-gradient(135deg,#0097b2,#00c8e8);color:#fff;">2025</div>
+              <div>
+                <p class="w-title">IEEE Best Paper Award</p>
+                <p class="w-text">Uluslararası konferansta en iyi bildiri ödülü.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;">2024</div>
+              <div>
+                <p class="w-title">EPDK İşbirliği Protokolü</p>
+                <p class="w-text">Kritik altyapı güvenliği için EPDK ile ortak çalışma imzalandı.</p>
+              </div>
+            </div>
+            <div class="w-item">
+              <div class="w-date" style="background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:#fff;">2023</div>
+              <div>
+                <p class="w-title">SAGA Ar-Ge Projesi</p>
+                <p class="w-text">SSB destekli savunma sanayi siber güvenlik projesi başlatıldı.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     PROJELER
+════════════════════════════════════════════════ -->
+<section class="proj-bg" id="projects">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="sec-tag">Aktif Çalışmalar</span>
+      <h2 class="sec-title">Projeler</h2>
+      <div class="sec-line mx-auto"></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-active">● Aktif</span>
+          <div class="proj-title">CyberSentinel: AI Tabanlı Tehdit Algılama</div>
+          <div class="proj-desc">Gerçek zamanlı ağ trafiği analizi için derin öğrenme modelleri kullanan akıllı tehdit algılama sistemi.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2024 – 2026</span>
+            <span><i class="fa fa-coins"></i>TÜBİTAK 1001</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>70%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:70%"></div></div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-active">● Aktif</span>
+          <div class="proj-title">IoTShield: Hafif Şifreleme Protokolleri</div>
+          <div class="proj-desc">Kısıtlı kaynaklara sahip IoT cihazları için optimize edilmiş kriptografik protokollerin geliştirilmesi.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2025 – 2027</span>
+            <span><i class="fa fa-coins"></i>TÜBİTAK 2209-A</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>35%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:35%"></div></div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-active">● Aktif</span>
+          <div class="proj-title">SAGA: Savunma Sanayi Siber Güvenlik</div>
+          <div class="proj-desc">SSB ortaklığıyla kritik altyapı sistemlerinin siber güvenlik değerlendirmesi ve test çerçevesi.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2023 – 2026</span>
+            <span><i class="fa fa-coins"></i>SSB</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>85%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:85%"></div></div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-done">✓ Tamamlandı</span>
+          <div class="proj-title">MalGraph: GNN ile Kötücül Yazılım Sınıflandırma</div>
+          <div class="proj-desc">Graph Neural Network yaklaşımıyla statik analiz tabanlı otomatik malware sınıflandırma sistemi.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2023 – 2024</span>
+            <span><i class="fa fa-coins"></i>SAÜ BAP</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>100%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:100%;background:linear-gradient(90deg,#2e7d32,#43a047)"></div></div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-plan">○ Planlama</span>
+          <div class="proj-title">QuantumSec: Post-Kuantum Kriptografi</div>
+          <div class="proj-desc">Kuantum bilgisayar tehditlerine karşı dayanıklı yeni nesil şifreleme algoritmalarının araştırılması.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2026 – 2028</span>
+            <span><i class="fa fa-coins"></i>TÜBİTAK 1001</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>5%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:5%;background:linear-gradient(90deg,#1565c0,#1976d2)"></div></div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 fade-up">
+        <div class="proj-card">
+          <span class="proj-status s-active">● Aktif</span>
+          <div class="proj-title">DevSecOps Eğitim Platformu</div>
+          <div class="proj-desc">Yazılım geliştirme süreçlerine güvenliği entegre eden DevSecOps metodolojisi için interaktif eğitim platformu.</div>
+          <div class="proj-meta">
+            <span><i class="fa fa-calendar"></i>2025 – 2026</span>
+            <span><i class="fa fa-coins"></i>TÜBİTAK BİDEB</span>
+          </div>
+          <div class="proj-prog-lbl"><span>İlerleme</span><span>55%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     ORTAK KURUMLAR
+════════════════════════════════════════════════ -->
+<section style="background:#fff; padding:40px 0;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="sec-tag">İş Birlikleri</span>
+      <h2 class="sec-title" style="font-size:22px;">Ortak Kurumlar</h2>
+      <div class="sec-line mx-auto"></div>
+    </div>
+    <div class="d-flex flex-wrap gap-3 justify-content-center align-items-center mt-4">
+      <div class="partner-pill"><i class="fa fa-atom"></i>TÜBİTAK</div>
+      <div class="partner-pill"><i class="fa fa-shield"></i>SSB</div>
+      <div class="partner-pill"><i class="fa fa-bolt"></i>EPDK</div>
+      <div class="partner-pill"><i class="fa fa-building"></i>Barikat Siber Güvenlik</div>
+      <div class="partner-pill"><i class="fa fa-globe"></i>IEEE</div>
+      <div class="partner-pill"><i class="fa fa-graduation-cap"></i>SARGEM</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     İLETİŞİM
+════════════════════════════════════════════════ -->
+<section id="contact" style="background:var(--gray-light);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="sec-tag">Bize Ulaşın</span>
+      <h2 class="sec-title">İletişim</h2>
+      <div class="sec-line mx-auto"></div>
+    </div>
+    <div class="row g-4">
+      <!-- Info Card -->
+      <div class="col-lg-5">
+        <div class="widget" style="border-radius:16px;">
+          <div class="widget-hdr" style="padding:18px 22px;">
+            <h4 class="widget-hdr-title" style="font-size:15px;"><i class="fa fa-location-dot"></i>Lab Bilgileri</h4>
+          </div>
+          <div style="padding:22px;">
+            <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>Sakarya Üniversitesi, Bilgisayar ve Bilişim Bilimleri Fakültesi,<br>Esentepe Kampüsü, 54187 Serdivan / Sakarya</span></div>
+            <div class="ft-contact-row"><i class="fa fa-envelope"></i><a href="mailto:cybersense@sakarya.edu.tr">cybersense@sakarya.edu.tr</a></div>
+            <div class="ft-contact-row"><i class="fa fa-phone"></i><span>+90 (264) 295 XXXX</span></div>
+            <div class="ft-contact-row"><i class="fa fa-clock"></i><span>Pazartesi – Cuma: 09:00 – 17:00</span></div>
+            <div class="social-row">
+              <a href="#" class="soc-ico" aria-label="GitHub"><i class="fab fa-github"></i></a>
+              <a href="#" class="soc-ico" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="soc-ico" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="soc-ico" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Form -->
+      <div class="col-lg-7">
+        <div class="widget" style="border-radius:16px;">
+          <div class="widget-hdr" style="padding:18px 22px;">
+            <h4 class="widget-hdr-title" style="font-size:15px;"><i class="fa fa-paper-plane"></i>Mesaj Gönderin</h4>
+          </div>
+          <div style="padding:22px;">
+            <form id="contactForm" onsubmit="handleContact(event)" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Ad Soyad</label>
+                  <input type="text" class="form-control" placeholder="Adınız Soyadınız" required style="border-radius:8px;border:1.5px solid #e6edf5;font-size:13px;">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">E-posta</label>
+                  <input type="email" class="form-control" placeholder="ornek@email.com" required style="border-radius:8px;border:1.5px solid #e6edf5;font-size:13px;">
+                </div>
+                <div class="col-12">
+                  <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Konu</label>
+                  <select class="form-select" style="border-radius:8px;border:1.5px solid #e6edf5;font-size:13px;">
+                    <option>Araştırma İşbirliği</option>
+                    <option>Doktora Programı</option>
+                    <option>Proje Desteği</option>
+                    <option>Etkinlik</option>
+                    <option>Diğer</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Mesajınız</label>
+                  <textarea class="form-control" rows="4" placeholder="Mesajınızı yazın..." required style="border-radius:8px;border:1.5px solid #e6edf5;font-size:13px;resize:none;"></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn-cyber" style="width:100%;justify-content:center;">
+                    <i class="fa fa-paper-plane"></i>Gönder
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:44px;height:44px;background:var(--cyan);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);font-size:18px;">S</div>
+          <div><div class="ft-brand-name">CyberSense Lab</div><div class="ft-brand-sub">SARGEM · Sakarya Üniversitesi</div></div>
+        </div>
+        <p class="ft-about">Sakarya Üniversitesi SARGEM bünyesinde faaliyet gösteren, siber güvenlik ve yapay zeka alanında öncü araştırmalar yürüten akademik laboratuvar.</p>
+        <div class="social-row">
+          <a href="#" class="soc-ico" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" class="soc-ico" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="soc-ico" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="soc-ico" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="ft-section-title">Lab</div>
+        <ul class="ft-links">
+          <li><a href="#about"><i class="fa fa-angle-right"></i>Hakkımızda</a></li>
+          <li><a href="#team"><i class="fa fa-angle-right"></i>Ekip</a></li>
+          <li><a href="#research"><i class="fa fa-angle-right"></i>Araştırma</a></li>
+          <li><a href="#publications"><i class="fa fa-angle-right"></i>Yayınlar</a></li>
+          <li><a href="#projects"><i class="fa fa-angle-right"></i>Projeler</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-md-4">
+        <div class="ft-section-title">Bağlantılar</div>
+        <ul class="ft-links">
+          <li><a href="https://www.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>SAÜ</a></li>
+          <li><a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>Bilgisayar Müh.</a></li>
+          <li><a href="#" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>SARGEM</a></li>
+          <li><a href="https://tubitak.gov.tr/" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>TÜBİTAK</a></li>
+          <li><a href="#" target="_blank" rel="noopener"><i class="fa fa-angle-right"></i>GitHub Org</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4 col-md-4">
+        <div class="ft-section-title">İletişim</div>
+        <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>Esentepe Kampüsü, BBF, 54187 Serdivan / Sakarya</span></div>
+        <div class="ft-contact-row"><i class="fa fa-envelope"></i><a href="mailto:cybersense@sakarya.edu.tr">cybersense@sakarya.edu.tr</a></div>
+        <div class="ft-contact-row"><i class="fa fa-phone"></i><span>+90 (264) 295 XXXX</span></div>
+        <div class="ft-contact-row"><i class="fa fa-clock"></i><span>Pzt – Cum: 09:00 – 17:00</span></div>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <p class="mb-0">© 2026 <span class="ft-cyan">SARGEM CyberSense Lab</span> · Sakarya Üniversitesi</p>
+        </div>
+        <div class="col-md-6 text-md-end mt-2 mt-md-0">
+          <a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener" style="color:rgba(255,255,255,.38);font-size:12px;text-decoration:none;">Bilgisayar Mühendisliği Bölümü</a>
+          <span style="margin:0 8px;opacity:.25;">·</span>
+          <a href="#" style="color:rgba(255,255,255,.38);font-size:12px;text-decoration:none;">Gizlilik Politikası</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Yukarı çık">
+  <i class="fa fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ── PARTICLES ──────────────────────────────── */
+  (function () {
+    const c = document.getElementById('particles');
+    for (let i = 0; i < 22; i++) {
+      const p = document.createElement('div');
+      p.className = 'hero-particle';
+      const s = 1 + Math.random() * 2;
+      p.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+      c.appendChild(p);
+    }
+  })();
+
+  /* ── COUNTER ────────────────────────────────── */
+  function animCounter(el) {
+    const target = +el.dataset.target;
+    // skip year – show static
+    if (target > 2000) { el.textContent = target; return; }
+    const dur = 1400;
+    const t0 = performance.now();
+    (function tick(t) {
+      const p = Math.min((t - t0) / dur, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+
+  /* ── INTERSECTION OBSERVER ──────────────────── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+  const statsIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.querySelectorAll('[data-target]').forEach(el => {
+        if (!el.dataset.counted) { el.dataset.counted = 1; animCounter(el); }
+      });
+    });
+  }, { threshold: 0.4 });
+  statsIO.observe(document.querySelector('.stats-bar'));
+
+  /* ── BACK TO TOP ────────────────────────────── */
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => btt.classList.toggle('show', scrollY > 320), { passive: true });
+
+  /* ── ACTIVE NAV ─────────────────────────────── */
+  const navLinks = document.querySelectorAll('.main-navbar .nav-link:not(.dropdown-toggle):not(.nav-highlight)');
+  const scrollSections = document.querySelectorAll('section[id], div[id].stats-bar');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    scrollSections.forEach(s => { if (scrollY >= s.offsetTop - 90) cur = s.id; });
+    navLinks.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  }, { passive: true });
+
+  /* ── SMOOTH SCROLL ──────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  /* ── SEARCH ─────────────────────────────────── */
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (q) {
+      // Placeholder: actual search integration goes here
+      const results = ['Araştırma Alanları', 'Yayınlar', 'Projeler', 'Ekip', 'İletişim']
+        .filter(s => s.toLowerCase().includes(q.toLowerCase()));
+      alert(results.length ? 'Bulunan bölümler:\n• ' + results.join('\n• ') : '"' + q + '" için sonuç bulunamadı.');
+    }
+  }
+  document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  /* ── CONTACT FORM ───────────────────────────── */
+  function handleContact(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa fa-check"></i>Mesajınız Gönderildi!';
+    btn.style.background = '#2e7d32';
+    btn.disabled = true;
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.disabled = false; e.target.reset(); }, 3500);
+  }
+</script>
+</body>
+</html>
