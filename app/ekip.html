@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Araştırma Ekibi | SARGEM CyberSense Lab</title>
+  <meta name="description" content="SARGEM CyberSense Lab araştırma ekibi">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container">
+    <h1><i class="fa fa-users me-2" style="color:var(--cyan);"></i>Araştırma Ekibi</h1>
+    <p>SARGEM CyberSense Lab bünyesindeki akademisyen ve araştırmacılar</p>
+  </div>
+</div>
+
+<!-- Content -->
+<section style="background:var(--gray-light); padding:48px 0;">
+  <div class="container" id="team-full">
+    <!-- js/ekip.js tarafından yüklenir -->
+    <div class="text-center py-5">
+      <div class="spinner-border" style="color:var(--cyan);width:44px;height:44px;" role="status"></div>
+      <p class="mt-3" style="color:var(--gray-mid);font-size:14px;">Yükleniyor...</p>
+    </div>
+  </div>
+</section>
+
+<div id="footer"></div>
+<button id="btt" aria-label="Yukarı çık"><i class="fa fa-chevron-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/ekip.js"></script>
+</body>
+</html>
