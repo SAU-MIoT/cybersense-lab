@@ -1,4 +1,4 @@
-import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty } from './components.js';
+import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty } from './components.js?v=20260517h';
 import { getProjects } from './services.js';
 
 renderNavbar('projects');
@@ -16,16 +16,37 @@ function imagesOf(item) {
   return Array.isArray(item?.images) ? item.images.filter(image => image.image_url) : [];
 }
 
+function renderPlaceholder(item) {
+  const rawTitle = (item?.title || '').trim();
+  const title = rawTitle
+    ? rawTitle.split(/\s+/).slice(0, 3).join(' ')
+    : 'Research Signal';
+  const meta = item?.funder || item?.date_range || 'CyberSense Lab';
+
+  return `
+    <div class="proj-img content-cover media-placeholder media-placeholder--project">
+      <div class="media-grid"></div>
+      <span class="media-orbit media-orbit-a" aria-hidden="true"></span>
+      <span class="media-orbit media-orbit-b" aria-hidden="true"></span>
+      <span class="media-node media-node-a" aria-hidden="true"></span>
+      <span class="media-node media-node-b" aria-hidden="true"></span>
+      <span class="media-node media-node-c" aria-hidden="true"></span>
+      <div class="media-panel">
+        <span class="media-panel-icon"><i class="fa fa-diagram-project"></i></span>
+        <span class="media-panel-kicker">${esc('Research Project')}</span>
+        <strong class="media-panel-title">${esc(title)}</strong>
+        <span class="media-panel-meta">${esc(meta)}</span>
+      </div>
+      <span class="media-beam" aria-hidden="true"></span>
+    </div>`;
+}
+
 function renderMedia(item) {
   const image = imagesOf(item)[0];
   if (image) {
     return `<div class="proj-img content-cover"><img src="${esc(image.image_url)}" alt="${esc(image.alt_text || item.title || '')}" loading="lazy"></div>`;
   }
-  return `
-    <div class="proj-img content-cover media-placeholder">
-      <div class="media-grid"></div>
-      <i class="fa fa-diagram-project"></i>
-    </div>`;
+  return renderPlaceholder(item);
 }
 
 function renderGallery(item) {

@@ -1,7 +1,7 @@
 ﻿import {
   renderNavbar, renderFooter, initBackToTop, initScrollAnimations,
   formatDate, formatDateShort, renderLoading, renderError, renderEmpty
-} from './components.js?v=20260517e';
+} from './components.js?v=20260517h';
 import {
   getAnnouncements, getProjects, getEvents,
   getResearchAreas, getTeam, getPublications, getAwards,
@@ -27,12 +27,42 @@ initScrollAnimations();
 (function () {
   const el = document.querySelector('.hero-sub');
   if (!el) return;
-  const text = el.textContent.trim();
+  const text = el.textContent.replace(/\s+/g, ' ').trim();
+  const reserveHeight = () => {
+    const ghost = el.cloneNode(false);
+    ghost.textContent = text;
+    ghost.style.cssText = [
+      'position:absolute',
+      'visibility:hidden',
+      'pointer-events:none',
+      'height:auto',
+      'min-height:0',
+      'animation:none',
+      'transform:none',
+      'opacity:1',
+      `width:${Math.max(1, Math.ceil(el.getBoundingClientRect().width || el.parentElement.getBoundingClientRect().width))}px`,
+    ].join(';');
+    el.parentElement.appendChild(ghost);
+    const height = Math.ceil(ghost.getBoundingClientRect().height);
+    ghost.remove();
+    el.style.minHeight = `${height}px`;
+  };
+
+  reserveHeight();
+  let resizeRaf = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(reserveHeight);
+  }, { passive: true });
+
   el.textContent = '';
-  el.style.minHeight = '4em';
+  const textNode = document.createElement('span');
+  textNode.className = 'hero-sub-text';
+  el.appendChild(textNode);
 
   const cursor = document.createElement('span');
-  cursor.style.cssText = 'display:inline-block;width:2px;height:1.1em;background:var(--cyan);margin-left:2px;vertical-align:text-bottom;animation:blink-cursor .75s step-end infinite;';
+  cursor.className = 'hero-sub-cursor';
+  cursor.setAttribute('aria-hidden', 'true');
   el.appendChild(cursor);
 
   let i = 0;
@@ -41,7 +71,7 @@ initScrollAnimations();
 
   setTimeout(() => {
     const interval = setInterval(() => {
-      cursor.before(text[i++]);
+      textNode.textContent += text[i++];
       if (i >= text.length) {
         clearInterval(interval);
         setTimeout(() => cursor.remove(), 1200);
@@ -76,16 +106,52 @@ function imagesOf(item) {
   return Array.isArray(item?.images) ? item.images.filter(image => image.image_url) : [];
 }
 
+function getPlaceholderMeta(item, className = '') {
+  const isProject = className.includes('proj-img');
+  const rawTitle = (item?.title || '').trim();
+  const title = rawTitle
+    ? rawTitle.split(/\s+/).slice(0, 3).join(' ')
+    : (isProject ? 'Research Signal' : 'Lab Bulletin');
+  const meta = isProject
+    ? (item?.funder || item?.date_range || 'CyberSense Lab')
+    : ((item?.created_at || item?.event_date)
+      ? formatDate(item.created_at || item.event_date)
+      : 'CyberSense Lab');
+
+  return {
+    variant: isProject ? 'project' : 'news',
+    kicker: isProject ? 'Research Project' : 'Lab Bulletin',
+    title,
+    meta,
+  };
+}
+
+function renderPlaceholder(item, icon, className) {
+  const placeholder = getPlaceholderMeta(item, className);
+  return `
+    <div class="${className} media-placeholder media-placeholder--${placeholder.variant}">
+      <div class="media-grid"></div>
+      <span class="media-orbit media-orbit-a" aria-hidden="true"></span>
+      <span class="media-orbit media-orbit-b" aria-hidden="true"></span>
+      <span class="media-node media-node-a" aria-hidden="true"></span>
+      <span class="media-node media-node-b" aria-hidden="true"></span>
+      <span class="media-node media-node-c" aria-hidden="true"></span>
+      <div class="media-panel">
+        <span class="media-panel-icon"><i class="fa ${icon}"></i></span>
+        <span class="media-panel-kicker">${esc(placeholder.kicker)}</span>
+        <strong class="media-panel-title">${esc(placeholder.title)}</strong>
+        <span class="media-panel-meta">${esc(placeholder.meta)}</span>
+      </div>
+      <span class="media-beam" aria-hidden="true"></span>
+    </div>`;
+}
+
 function renderMedia(item, icon = 'fa-shield-halved', className = 'content-cover') {
   const image = imagesOf(item)[0];
   if (image) {
     return `<div class="${className}"><img src="${esc(image.image_url)}" alt="${esc(image.alt_text || item.title || '')}" loading="lazy"></div>`;
   }
-  return `
-    <div class="${className} media-placeholder">
-      <div class="media-grid"></div>
-      <i class="fa ${icon}"></i>
-    </div>`;
+  return renderPlaceholder(item, icon, className);
 }
 
 function renderGallery(item) {
@@ -154,17 +220,37 @@ async function loadStats() {
 async function loadLabInfo() {
   const el = document.getElementById('lab-info');
   if (!el) return;
+  const fixedAddress = 'Esentepe, 54050 Serdivan/Sakarya Sakarya Araştırma Geliştirme Uygulama ve Araştırma Merkezi';
+  const mapLink = 'https://maps.app.goo.gl/dWtjRHcNDScvHeC38';
+  const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(fixedAddress)}&z=16&output=embed`;
+  let settings = {};
   try {
-    const s = await getSiteSettings();
-    el.innerHTML = `
-      <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>${esc(s.lab_adres || '')}</span></div>
-      <div class="ft-contact-row"><i class="fa fa-envelope"></i><a href="mailto:${esc(s.lab_email || 'ibutun@sakarya.edu.tr')}">${esc(s.lab_email || 'ibutun@sakarya.edu.tr')}</a></div>
-      <div class="ft-contact-row"><i class="fa fa-phone"></i><span>${esc(s.lab_telefon || '')}</span></div>
-      <div class="ft-contact-row"><i class="fa fa-clock"></i><span>${esc(s.lab_calisma_saatleri || '')}</span></div>`;
+    settings = await getSiteSettings();
   } catch (err) {
-    el.innerHTML = '<p style="color:#e74c3c;font-size:13px;">İletişim bilgileri yüklenemedi.</p>';
     console.error(err);
   }
+
+  const email = settings.lab_email || 'ibutun@sakarya.edu.tr';
+  const phone = settings.lab_telefon || '+90 (264) 295 XXXX';
+  const hours = settings.lab_calisma_saatleri || 'Pzt – Cum: 09:00 – 17:00';
+
+  el.innerHTML = `
+    <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>${esc(fixedAddress)}</span></div>
+    <div class="ft-contact-row"><i class="fa fa-envelope"></i><a href="mailto:${esc(email)}">${esc(email)}</a></div>
+    <div class="ft-contact-row"><i class="fa fa-phone"></i><span>${esc(phone)}</span></div>
+    <div class="ft-contact-row"><i class="fa fa-clock"></i><span>${esc(hours)}</span></div>
+    <div class="lab-map-card">
+      <iframe
+        class="lab-map-frame"
+        src="${mapEmbed}"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="SARGEM Google Maps konumu"
+      ></iframe>
+      <a class="lab-map-link" href="${mapLink}" target="_blank" rel="noopener">
+        <i class="fa fa-map-location-dot"></i>Google Maps'te Aç
+      </a>
+    </div>`;
 }
 
 // â”€â”€ Partners â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

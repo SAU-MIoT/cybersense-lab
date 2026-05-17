@@ -26,6 +26,7 @@ export function renderNavbar(activePage = 'home') {
       <div>
         <a href="https://www.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-university"></i>Sakarya Üniversitesi</a>
         <a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-laptop-code"></i>Bilgisayar Mühendisliği</a>
+        <a href="https://seng.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-code"></i>SAÜ Yazılım</a>
         <a href="https://sargem.sakarya.edu.tr/tr" target="_blank" rel="noopener"><i class="fa fa-flask"></i>SARGEM</a>
       </div>
       <div>
@@ -75,13 +76,6 @@ export function renderNavbar(activePage = 'home') {
           <li class="nav-item"><a class="nav-link" href="index.html#contact">İletişim</a></li>
           ${hasAdminSession ? `<li class="nav-item"><a class="nav-link ${activePage==='admin'?'active':''}" href="admin.html"><i class="fa fa-shield-halved me-1"></i>Yönetim</a></li>` : ''}
         </ul>
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link nav-highlight" href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener">
-              <i class="fa fa-arrow-up-right-from-square me-1"></i>SAÜ CS
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   </nav>`;
@@ -127,7 +121,7 @@ export function renderFooter() {
         </div>
         <div class="col-lg-4 col-md-4">
           <div class="ft-section-title">İletişim</div>
-          <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>Esentepe Kampüsü, BBF, 54187 Serdivan / Sakarya</span></div>
+          <div class="ft-contact-row"><i class="fa fa-location-dot"></i><span>Esentepe, 54050 Serdivan/Sakarya Sakarya Araştırma Geliştirme Uygulama ve Araştırma Merkezi</span></div>
           <div class="ft-contact-row"><i class="fa fa-envelope"></i><a href="mailto:ibutun@sakarya.edu.tr">ibutun@sakarya.edu.tr</a></div>
           <div class="ft-contact-row"><i class="fa fa-phone"></i><span>+90 (264) 295 XXXX</span></div>
           <div class="ft-contact-row"><i class="fa fa-clock"></i><span>Pzt – Cum: 09:00 – 17:00</span></div>
