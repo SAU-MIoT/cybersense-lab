@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yönetim | SARGEM CyberSense Laboratuvarı</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar"></div>
+
+<div class="page-header admin-header">
+  <div class="container">
+    <div>
+      <h1><i class="fa fa-shield-halved me-2" style="color:var(--cyan);"></i>Yönetim</h1>
+      <p>Supabase RPC uzerinden guvenli icerik yonetimi</p>
+    </div>
+    <div class="admin-session">
+      <span id="admin-profile">Admin</span>
+      <button id="admin-logout" type="button" class="btn-outline-cyber">
+        <i class="fa fa-right-from-bracket"></i> Cikis
+      </button>
+    </div>
+  </div>
+</div>
+
+<main class="admin-layout">
+  <aside class="admin-sidebar" aria-label="Yönetim bölümleri">
+    <div id="admin-tabs" class="admin-tabs"></div>
+  </aside>
+
+  <section class="admin-content">
+    <div class="admin-toolbar">
+      <div>
+        <h2 id="admin-title">Kayıtlar</h2>
+        <p id="admin-subtitle">Yükleniyor</p>
+      </div>
+      <div class="admin-toolbar-actions">
+        <button id="admin-refresh" type="button" class="icon-btn" title="Yenile" aria-label="Yenile">
+          <i class="fa fa-rotate-right"></i>
+        </button>
+        <button id="admin-create" type="button" class="btn-cyber">
+          <i class="fa fa-plus"></i> Yeni
+        </button>
+      </div>
+    </div>
+
+    <div id="admin-feedback" class="admin-feedback" role="status" aria-live="polite"></div>
+    <div id="admin-list" class="admin-list"></div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<button id="btt" aria-label="Yukarı çık"><i class="fa fa-chevron-up"></i></button>
+
+<div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content admin-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminModalTitle">Kayıt</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body">
+        <div id="admin-modal-feedback" class="admin-feedback" role="status" aria-live="polite"></div>
+        <form id="admin-form" class="admin-form-grid"></form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Vazgec</button>
+        <button id="admin-save" type="submit" form="admin-form" class="btn-cyber">
+          <i class="fa fa-floppy-disk"></i> Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

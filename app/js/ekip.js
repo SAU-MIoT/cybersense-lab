@@ -14,7 +14,7 @@ function esc(str) {
 
 // priority → bölüm başlığı
 const PRIORITY_LABELS = {
-  4: { label: 'Lab Direktörü',    icon: 'fa-star' },
+  4: { label: 'Laboratuvar Direktörü', icon: 'fa-star' },
   3: { label: 'Öğretim Üyeleri & Proje Liderleri', icon: 'fa-chalkboard-teacher' },
   2: { label: 'Araştırma Asistanları & Stajyerler', icon: 'fa-flask' },
   1: { label: 'Çalışma Arkadaşları & Üyeler',       icon: 'fa-users' },
@@ -67,11 +67,11 @@ async function loadFullTeam() {
 
 function renderMemberCard(m) {
   const links = [
-    m.email        ? `<a href="mailto:${esc(m.email)}" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>` : '',
-    m.scholar_url  ? `<a href="${esc(m.scholar_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>` : '',
+    m.email ? `<a href="mailto:${esc(m.email)}" class="tc-link" aria-label="E-posta"><i class="fa fa-envelope"></i></a>` : '',
+    m.scholar_url ? `<a href="${esc(m.scholar_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="Scholar" style="font-size:11px;font-weight:800;">G</a>` : '',
     m.linkedin_url ? `<a href="${esc(m.linkedin_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>` : '',
-    m.github_url   ? `<a href="${esc(m.github_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="GitHub"><i class="fab fa-github"></i></a>` : '',
-    m.website_url  ? `<a href="${esc(m.website_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="Web"><i class="fa fa-globe"></i></a>` : '',
+    m.github_url ? `<a href="${esc(m.github_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="GitHub"><i class="fab fa-github"></i></a>` : '',
+    m.website_url ? `<a href="${esc(m.website_url)}" target="_blank" rel="noopener" class="tc-link" aria-label="Web"><i class="fa fa-globe"></i></a>` : '',
   ].filter(Boolean).join('');
 
   return `

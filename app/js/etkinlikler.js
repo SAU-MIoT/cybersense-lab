@@ -1,4 +1,4 @@
-import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty, formatDate } from './components.js';
+import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty } from './components.js';
 import { getEvents } from './services.js';
 
 renderNavbar('events');
@@ -10,6 +10,23 @@ function esc(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function imagesOf(item) {
+  return Array.isArray(item?.images) ? item.images.filter(image => image.image_url) : [];
+}
+
+function renderGallery(item) {
+  const images = imagesOf(item);
+  if (!images.length) return '';
+  return `
+    <div class="content-gallery event-gallery">
+      ${images.map(image => `
+        <a href="${esc(image.image_url)}" target="_blank" rel="noopener">
+          <img src="${esc(image.image_url)}" alt="${esc(image.alt_text || item.title || '')}" loading="lazy">
+        </a>
+      `).join('')}
+    </div>`;
 }
 
 function isPast(dateStr) {
@@ -25,7 +42,7 @@ async function loadEvents() {
     if (!data || data.length === 0) { renderEmpty(container, 'Henüz etkinlik bulunmuyor.'); return; }
 
     const upcoming = data.filter(e => !isPast(e.event_date));
-    const past     = data.filter(e =>  isPast(e.event_date));
+    const past = data.filter(e => isPast(e.event_date));
 
     let html = '';
 
@@ -56,7 +73,8 @@ function eventCard(e, past) {
   const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 
   return `
-    <div class="announcement-card" style="${past ? 'opacity:.65;' : ''}">
+    <div class="announcement-card" style="${past ? 'opacity:.72;' : ''}">
+      ${renderGallery(e)}
       <div style="display:flex;gap:18px;align-items:flex-start;">
         <div style="background:${past ? '#aaa' : 'var(--navy-mid)'};color:${past ? '#fff' : 'var(--cyan)'};
           padding:10px 14px;border-radius:10px;text-align:center;min-width:52px;flex-shrink:0;font-weight:700;font-size:12px;line-height:1.4;">
@@ -76,7 +94,7 @@ function eventCard(e, past) {
           </div>
           ${!past ? `
           <div style="margin-top:12px;">
-            <a href="mailto:cybersense@sakarya.edu.tr?subject=${encodeURIComponent(e.title + ' - Başvuru Hk.')}"
+            <a href="mailto:ibutun@sakarya.edu.tr?subject=${encodeURIComponent(e.title + ' - Başvuru Hk.')}"
                class="btn btn-sm"
                style="background:var(--cyan);color:var(--navy);font-weight:700;border-radius:8px;padding:6px 18px;font-size:12px;text-decoration:none;">
               <i class="fa fa-paper-plane me-1"></i>Başvur

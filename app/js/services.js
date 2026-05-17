@@ -1,5 +1,48 @@
 import { supabase } from './supabase.js';
 
+const IMAGE_ENTITIES = new Set(['announcements', 'projects', 'etkinlikler']);
+
+async function getContentImages(entityType, ids) {
+  const uniqueIds = [...new Set((ids || []).filter(Boolean).map(String))];
+  if (!IMAGE_ENTITIES.has(entityType) || uniqueIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('content_images')
+    .select('id, entity_type, entity_id, image_url, alt_text, sort_order')
+    .eq('entity_type', entityType)
+    .eq('is_published', true)
+    .in('entity_id', uniqueIds)
+    .order('sort_order', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+async function attachContentImages(entityType, rows) {
+  const list = rows || [];
+  if (!list.length) return list;
+
+  const images = await getContentImages(entityType, list.map(row => row.id));
+  const byRecord = new Map();
+  images.forEach(image => {
+    const key = String(image.entity_id);
+    if (!byRecord.has(key)) byRecord.set(key, []);
+    byRecord.get(key).push(image);
+  });
+
+  return list.map(row => {
+    const related = byRecord.get(String(row.id)) || [];
+    if (entityType === 'projects' && row.image_url && !related.length) {
+      related.push({
+        image_url: row.image_url,
+        alt_text: row.title || 'Proje görseli',
+        sort_order: 0,
+      });
+    }
+    return { ...row, images: related };
+  });
+}
+
 /**
  * Yayınlanmış duyuruları getirir (sadece SELECT — RLS ile korunuyor)
  */
@@ -14,7 +57,7 @@ export async function getAnnouncements(limit = null) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return attachContentImages('announcements', data);
 }
 
 /**
@@ -31,7 +74,7 @@ export async function getProjects(limit = null) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return attachContentImages('projects', data);
 }
 
 /**
@@ -48,7 +91,7 @@ export async function getEvents(limit = null) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return attachContentImages('etkinlikler', data);
 }
 
 /**
@@ -143,3 +186,25 @@ export async function getPartners() {
   return data;
 }
 
+/**
+ * Ana sayfa istatistikleri icin PostgREST count kullanir.
+ */
+export async function getPublicCounts() {
+  const [team, publications, activeProjects, partners] = await Promise.all([
+    supabase.count('ekip', [['is_published', 'eq', true]]),
+    supabase.count('yayinlar', [['is_published', 'eq', true]]),
+    supabase.count('projects', [['is_published', 'eq', true], ['status', 'eq', 'active']]),
+    supabase.count('ortaklar', [['is_published', 'eq', true]]),
+  ]);
+
+  const failed = [team, publications, activeProjects, partners].find(result => result.error);
+  if (failed) throw failed.error;
+
+  return {
+    team: team.count,
+    publications: publications.count,
+    activeProjects: activeProjects.count,
+    partners: partners.count,
+    foundedYear: 2025,
+  };
+}

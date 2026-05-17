@@ -16,13 +16,11 @@ let allData = [];
 
 function pubCard(p) {
   const typeIcon  = p.pub_type === 'journal' ? 'fa-file-pdf' : 'fa-file-lines';
-  const typeBadge = p.pub_type === 'journal'
-    ? `<span class="pub-badge badge-j">Dergi</span>`
+  const typeBadge = p.pub_type === 'journal' ?
+     `<span class="pub-badge badge-j">Dergi</span>`
     : `<span class="pub-badge badge-c">Konferans</span>`;
-  const pdfLink = p.pdf_url
-    ? `<a href="${esc(p.pdf_url)}" target="_blank" rel="noopener" class="pub-badge badge-j" style="text-decoration:none;"><i class="fa fa-file-pdf"></i> PDF</a>` : '';
-  const doiLink = p.doi_url
-    ? `<a href="${esc(p.doi_url)}" target="_blank" rel="noopener" class="pub-badge badge-y" style="text-decoration:none;">DOI</a>` : '';
+  const pdfLink = p.pdf_url ? `<a href="${esc(p.pdf_url)}" target="_blank" rel="noopener" class="pub-badge badge-j" style="text-decoration:none;"><i class="fa fa-file-pdf"></i> PDF</a>` : '';
+  const doiLink = p.doi_url ? `<a href="${esc(p.doi_url)}" target="_blank" rel="noopener" class="pub-badge badge-y" style="text-decoration:none;">DOI</a>` : '';
 
   const detailId = 'pub-detail-' + p.id;
   return `
