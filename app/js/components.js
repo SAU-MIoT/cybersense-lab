@@ -179,9 +179,22 @@ export function initBackToTop() {
   btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
+let _scrollIO = null;
 export function initScrollAnimations() {
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+  if (!_scrollIO) {
+    _scrollIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          _scrollIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  }
+  document.querySelectorAll(
+    '.fade-up:not([data-io]),.fade-left:not([data-io]),.fade-right:not([data-io]),.zoom-in:not([data-io])'
+  ).forEach(el => {
+    el.setAttribute('data-io', '1');
+    _scrollIO.observe(el);
+  });
 }

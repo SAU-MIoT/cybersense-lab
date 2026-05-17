@@ -1,27 +1,65 @@
 ﻿import {
   renderNavbar, renderFooter, initBackToTop, initScrollAnimations,
   formatDate, formatDateShort, renderLoading, renderError, renderEmpty
-} from './components.js';
+} from './components.js?v=20260517e';
 import {
   getAnnouncements, getProjects, getEvents,
   getResearchAreas, getTeam, getPublications, getAwards,
   getSiteSettings, getPartners, getPublicCounts
 } from './services.js';
+import { initMouseTrail, initCursorGlow } from './animations.js?v=20260517e';
 
 // â”€â”€ Shared components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 renderNavbar('home');
 renderFooter();
 initBackToTop();
+// ── Mouse interactions on hero ─────────────────────────────────────────────
+initMouseTrail('hero');
+initCursorGlow('hero');
 
+// ── Animate static section headers on scroll ───────────────────────────────
+document.querySelectorAll('.sec-tag, .sec-title, .sec-line').forEach(el => {
+  el.classList.add('fade-up');
+});
+initScrollAnimations();
+
+// ── Hero subtitle typewriter effect ───────────────────────────────────────
+(function () {
+  const el = document.querySelector('.hero-sub');
+  if (!el) return;
+  const text = el.textContent.trim();
+  el.textContent = '';
+  el.style.minHeight = '4em';
+
+  const cursor = document.createElement('span');
+  cursor.style.cssText = 'display:inline-block;width:2px;height:1.1em;background:var(--cyan);margin-left:2px;vertical-align:text-bottom;animation:blink-cursor .75s step-end infinite;';
+  el.appendChild(cursor);
+
+  let i = 0;
+  const TYPE_DELAY = 800; // start after hero entrance anim
+  const CHAR_SPEED = 32;  // ms per character
+
+  setTimeout(() => {
+    const interval = setInterval(() => {
+      cursor.before(text[i++]);
+      if (i >= text.length) {
+        clearInterval(interval);
+        setTimeout(() => cursor.remove(), 1200);
+      }
+    }, CHAR_SPEED);
+  }, TYPE_DELAY);
+})();
 // â”€â”€ Hero particles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function () {
   const c = document.getElementById('particles');
   if (!c) return;
-  for (let i = 0; i < 22; i++) {
+  for (let i = 0; i < 45; i++) {
     const p = document.createElement('div');
     p.className = 'hero-particle';
-    const s = 1 + Math.random() * 2;
-    p.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+    const s   = 2.5 + Math.random() * 5.5;  // 2.5–8 px
+    const dur = 5   + Math.random() * 8;    // 5–13 s
+    const del = Math.random() * 5;          // 0–5 s delay
+    p.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${dur}s;animation-delay:${del}s;`;
     c.appendChild(p);
   }
 })();
