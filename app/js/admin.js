@@ -1,9 +1,10 @@
 import { renderNavbar, renderFooter, initBackToTop } from './components.js';
-import { requireAdmin, signOut } from './auth.js';
+import { requireAdmin, signOut, getAdminToken } from './auth.js';
 import {
   ADMIN_TABLES, getTableMeta,
   listRecords, createRecord, updateRecord, deleteRecord,
 } from './admin-api.js';
+import { uploadImage } from './image-upload.js';
 
 renderNavbar('admin');
 renderFooter();
@@ -238,6 +239,30 @@ function renderField(field, record) {
       </label>`;
   }
 
+  if (field.type === 'image-upload') {
+    const existingUrls = String(value || '').split('\n').map(u => u.trim()).filter(Boolean);
+    const previews = existingUrls.map(url => `
+      <div class="img-preview-item" data-url="${esc(url)}">
+        <img src="${esc(url)}" alt="" loading="lazy">
+        <button type="button" class="img-preview-remove" aria-label="Kaldır">&times;</button>
+      </div>`).join('');
+    return `
+      <label class="admin-field full">
+        <span>${field.label}</span>
+        <div class="img-upload-zone">
+          <div class="img-previews" id="img-previews-${field.name}">${previews}</div>
+          <label class="img-pick-btn">
+            <i class="fa fa-cloud-arrow-up"></i> Görsel Ekle
+            <input type="file" multiple accept="image/*"
+              class="img-file-input" data-field="${field.name}">
+          </label>
+          <small><i class="fa fa-info-circle"></i> WebP'ye sıkıştırılır · maks 1200&times;900 px · JPEG, PNG, GIF, WebP, AVIF desteklenir</small>
+        </div>
+        <input type="hidden" name="${field.name}" id="img-urls-${field.name}"
+          value="${esc(existingUrls.join('\n'))}">
+      </label>`;
+  }
+
   return `
     <label class="admin-field">
       <span>${field.label}</span>
@@ -249,13 +274,70 @@ function renderField(field, record) {
     </label>`;
 }
 
+// ── Image upload helpers ──────────────────────────────────────────
+
+function attachUploadListeners() {
+  els.form.querySelectorAll('.img-file-input').forEach(input => {
+    input.addEventListener('change', handleFileSelect);
+  });
+}
+
+async function handleFileSelect(event) {
+  const input    = event.currentTarget;
+  const field    = input.dataset.field;
+  const files    = Array.from(input.files || []);
+  if (!files.length) return;
+
+  const previewsEl = els.form.querySelector(`#img-previews-${field}`);
+  const hiddenEl   = els.form.querySelector(`#img-urls-${field}`);
+  if (!previewsEl || !hiddenEl) return;
+
+  if (els.save) els.save.disabled = true;
+  setModalFeedback('Görseller işleniyor ve yükleniyor…', 'info');
+
+  const errors = [];
+  try {
+    const token = await getAdminToken();
+    for (const file of files) {
+      try {
+        const url = await uploadImage(file, token);
+        // Append preview thumbnail
+        const item = document.createElement('div');
+        item.className = 'img-preview-item';
+        item.dataset.url = url;
+        item.innerHTML = `<img src="${esc(url)}" alt="" loading="lazy"><button type="button" class="img-preview-remove" aria-label="Kaldır">&times;</button>`;
+        previewsEl.appendChild(item);
+        // Append URL to hidden input
+        const list = hiddenEl.value.split('\n').filter(u => u.trim());
+        list.push(url);
+        hiddenEl.value = list.join('\n');
+      } catch (err) {
+        errors.push(`${file.name}: ${err.message}`);
+      }
+    }
+  } catch (outerErr) {
+    errors.push(outerErr.message);
+  } finally {
+    input.value = ''; // reset so same file can be re-selected if needed
+    if (els.save) els.save.disabled = false;
+    if (errors.length) {
+      setModalFeedback('Bazı görseller yüklenemedi — ' + errors.join(' | '));
+    } else {
+      setModalFeedback('');
+    }
+  }
+}
+
 function openForm(record = null) {
   const meta = getTableMeta(state.tableId);
   state.editing = record;
   setFeedback('');
   setModalFeedback('');
   if (els.modalTitle) els.modalTitle.textContent = record ? `${meta.label} düzenle` : `${meta.label} ekle`;
-  if (els.form) els.form.innerHTML = meta.fields.map(field => renderField(field, record)).join('');
+  if (els.form) {
+    els.form.innerHTML = meta.fields.map(field => renderField(field, record)).join('');
+    attachUploadListeners();
+  }
   bootstrap.Modal.getOrCreateInstance(els.modal).show();
 }
 
@@ -338,6 +420,27 @@ els.form.addEventListener('submit', saveRecord);
 els.logout.addEventListener('click', async () => {
   await signOut();
   location.href = 'login.html';
+});
+
+// Event delegation for image preview remove buttons (added once; works on dynamic content)
+els.form.addEventListener('click', e => {
+  const btn = e.target.closest('.img-preview-remove');
+  if (!btn) return;
+  const item       = btn.closest('.img-preview-item');
+  if (!item) return;
+  const url        = item.dataset.url || '';
+  const previewsEl = item.closest('.img-previews');
+  if (previewsEl) {
+    const fieldName = previewsEl.id.replace('img-previews-', '');
+    const hiddenEl  = els.form.querySelector(`#img-urls-${fieldName}`);
+    if (hiddenEl) {
+      hiddenEl.value = hiddenEl.value
+        .split('\n')
+        .filter(u => u.trim() && u.trim() !== url)
+        .join('\n');
+    }
+  }
+  item.remove();
 });
 
 bootstrapAdmin().catch(err => console.error(err));
