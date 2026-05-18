@@ -19,18 +19,19 @@ export function renderNavbar(activePage = 'home') {
   if (!nav) return;
   let hasAdminSession = false;
   try { hasAdminSession = Boolean(sessionStorage.getItem('cybersense_admin_session')); } catch {}
+  const authHref = hasAdminSession ? 'admin.html' : 'login.html';
+  const authLabel = hasAdminSession ? 'Panel' : 'Login';
+  const authIcon = hasAdminSession ? 'fa-shield-halved' : 'fa-right-to-bracket';
   nav.innerHTML = `
   <!-- TOP BAR -->
   <div class="top-bar">
-    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-1">
-      <div>
-        <a href="https://www.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-university"></i>Sakarya Üniversitesi</a>
-        <a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-laptop-code"></i>Bilgisayar Mühendisliği</a>
-        <a href="https://seng.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-code"></i>SAÜ Yazılım</a>
+    <div class="container top-bar-inner">
+      <div class="top-bar-links">
+        <a href="https://bf.sakarya.edu.tr/" target="_blank" rel="noopener"><i class="fa fa-building-columns"></i>SAÜ BF</a>
         <a href="https://sargem.sakarya.edu.tr/tr" target="_blank" rel="noopener"><i class="fa fa-flask"></i>SARGEM</a>
       </div>
-      <div>
-        <a href="mailto:ibutun@sakarya.edu.tr"><i class="fa fa-envelope"></i>ibutun@sakarya.edu.tr</a>
+      <div class="top-bar-contact">
+        <a href="mailto:ibutun@sakarya.edu.tr"><i class="fa fa-envelope"></i><span class="top-bar-mail-label">ibutun@sakarya.edu.tr</span></a>
       </div>
     </div>
   </div>
@@ -76,6 +77,9 @@ export function renderNavbar(activePage = 'home') {
           <li class="nav-item"><a class="nav-link" href="index.html#contact">İletişim</a></li>
           ${hasAdminSession ? `<li class="nav-item"><a class="nav-link ${activePage==='admin'?'active':''}" href="admin.html"><i class="fa fa-shield-halved me-1"></i>Yönetim</a></li>` : ''}
         </ul>
+        <div class="nav-auth-wrap d-flex mt-2 mt-lg-0">
+          <a class="nav-login-btn" href="${authHref}"><i class="fa ${authIcon}"></i>${authLabel}</a>
+        </div>
       </div>
     </div>
   </nav>`;

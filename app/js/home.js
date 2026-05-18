@@ -1,7 +1,7 @@
 ﻿import {
   renderNavbar, renderFooter, initBackToTop, initScrollAnimations,
   formatDate, formatDateShort, renderLoading, renderError, renderEmpty
-} from './components.js?v=20260517h';
+} from './components.js?v=20260518a';
 import {
   getAnnouncements, getProjects, getEvents,
   getResearchAreas, getTeam, getPublications, getAwards,
@@ -283,7 +283,7 @@ function showDetailModal(title, body, meta, images = []) {
   }
   if (m) m.textContent = meta || '';
   const modalEl = document.getElementById('detailModal');
-  if (modalEl) bootstrap.Modal.getOrCreate(modalEl).show();
+  if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
 // â”€â”€ Announcements (sidebar widget) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

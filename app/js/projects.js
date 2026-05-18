@@ -1,4 +1,4 @@
-import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty } from './components.js?v=20260517h';
+import { renderNavbar, renderFooter, initBackToTop, renderLoading, renderError, renderEmpty } from './components.js?v=20260518a';
 import { getProjects } from './services.js';
 
 renderNavbar('projects');
@@ -69,6 +69,10 @@ const statusMap = {
 };
 const barMap = { active: '', done: ' progress-bar-done', plan: ' progress-bar-plan' };
 
+function getContactHref() {
+  return 'index.html#contact';
+}
+
 function showProjModal(p) {
   const t = document.getElementById('projModalTitle');
   const b = document.getElementById('projModalBody');
@@ -88,9 +92,9 @@ function showProjModal(p) {
       ${p.github_url ? `<a href="${esc(p.github_url)}" target="_blank" rel="noopener" style="color:var(--cyan);font-weight:600;font-size:13px;"><i class="fab fa-github me-1"></i>GitHub</a>` : ''}
       ${p.demo_url ? `<a href="${esc(p.demo_url)}" target="_blank" rel="noopener" style="color:var(--cyan);font-weight:600;font-size:13px;"><i class="fa fa-globe me-1"></i>Demo</a>` : ''}
     </div>` : ''}`;
-  if (c) c.href = `mailto:ibutun@sakarya.edu.tr?subject=${encodeURIComponent(p.title + ' - Başvuru Hk.')}`;
+  if (c) c.href = getContactHref();
   const el = document.getElementById('projModal');
-  if (el) bootstrap.Modal.getOrCreate(el).show();
+  if (el) bootstrap.Modal.getOrCreateInstance(el).show();
 }
 
 async function loadAllProjects() {
@@ -128,7 +132,7 @@ async function loadAllProjects() {
               <button class="btn btn-sm btn-detail-${idx}" style="background:var(--navy);color:var(--cyan);font-weight:700;border-radius:8px;padding:5px 14px;font-size:12px;border:none;">
                 <i class="fa fa-circle-info me-1"></i>Detay
               </button>
-              <a href="mailto:ibutun@sakarya.edu.tr?subject=${encodeURIComponent(p.title + ' - Başvuru Hk.')}"
+              <a href="${getContactHref()}"
                  class="btn btn-sm" style="background:var(--cyan);color:var(--navy);font-weight:700;border-radius:8px;padding:5px 14px;font-size:12px;text-decoration:none;">
                 <i class="fa fa-envelope me-1"></i>İletişim
               </a>

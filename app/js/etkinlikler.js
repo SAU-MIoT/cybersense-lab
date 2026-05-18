@@ -5,6 +5,10 @@ renderNavbar('events');
 renderFooter();
 initBackToTop();
 
+function getContactHref() {
+  return 'index.html#contact';
+}
+
 function esc(str) {
   if (!str) return '';
   const d = document.createElement('div');
@@ -94,7 +98,7 @@ function eventCard(e, past) {
           </div>
           ${!past ? `
           <div style="margin-top:12px;">
-            <a href="mailto:ibutun@sakarya.edu.tr?subject=${encodeURIComponent(e.title + ' - Başvuru Hk.')}"
+            <a href="${getContactHref()}"
                class="btn btn-sm"
                style="background:var(--cyan);color:var(--navy);font-weight:700;border-radius:8px;padding:6px 18px;font-size:12px;text-decoration:none;">
               <i class="fa fa-paper-plane me-1"></i>Başvur
