@@ -336,6 +336,91 @@ async function loadEvents() {
   }
 }
 
+// ── Featured announcements carousel ────────────────────────────────────────
+async function loadFeaturedCarousel() {
+  const carousel = document.getElementById('mainCarousel');
+  if (!carousel) return;
+
+  const inner = carousel.querySelector('.carousel-inner');
+  const indicators = carousel.querySelector('.carousel-indicators');
+  const controls = carousel.querySelectorAll('.carousel-control-prev, .carousel-control-next');
+  if (!inner || !indicators) return;
+
+  const themes = [
+    { cls: 'slide-tubitak', icon: 'fa-microchip' },
+    { cls: 'slide-ieee', icon: 'fa-book-open' },
+    { cls: 'slide-summit', icon: 'fa-shield-halved' },
+  ];
+
+  try {
+    const data = await getAnnouncements(3);
+    if (!data || data.length === 0) {
+      indicators.innerHTML = '';
+      controls.forEach(control => { control.style.display = 'none'; });
+      inner.innerHTML = `
+        <div class="carousel-item active">
+          <div class="carousel-slide slide-tubitak">
+            <i class="fa fa-bell slide-deco-icon" aria-hidden="true"></i>
+            <div class="slide-center-badge" aria-hidden="true"><i class="fa fa-bell"></i></div>
+            <div class="carousel-caption-over">
+              <h5>Henüz duyuru bulunmuyor.</h5>
+              <p>Yayınlanan duyurular burada gösterilecek.</p>
+            </div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    controls.forEach(control => { control.style.display = data.length > 1 ? '' : 'none'; });
+    indicators.innerHTML = data.map((_, index) => `
+      <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="${index}" class="${index === 0 ? 'active' : ''}" aria-label="${index + 1}. duyuru"></button>
+    `).join('');
+
+    inner.innerHTML = data.map((item, index) => {
+      const theme = themes[index % themes.length];
+      const image = imagesOf(item)[0];
+      const text = item.content || '';
+      return `
+        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+          <div class="carousel-slide ${theme.cls}" data-featured-index="${index}">
+            ${image ? `<img class="carousel-slide-img" src="${esc(image.image_url)}" alt="${esc(image.alt_text || item.title || '')}" loading="lazy">` : ''}
+            <i class="fa ${theme.icon} slide-deco-icon" aria-hidden="true"></i>
+            <div class="slide-center-badge" aria-hidden="true"><i class="fa ${theme.icon}"></i></div>
+            <div class="carousel-caption-over">
+              <h5>${esc(item.title)}</h5>
+              <p>${esc(text.substring(0, 150))}${text.length > 150 ? '…' : ''}</p>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    inner.querySelectorAll('.carousel-slide[data-featured-index]').forEach(el => {
+      el.addEventListener('click', () => {
+        const item = data[Number(el.dataset.featuredIndex)];
+        showDetailModal(item.title, item.content, formatDate(item.created_at), imagesOf(item));
+      });
+    });
+
+    const instance = bootstrap.Carousel.getOrCreateInstance(carousel);
+    instance.to(0);
+  } catch (err) {
+    console.error('Featured carousel:', err);
+    indicators.innerHTML = '';
+    controls.forEach(control => { control.style.display = 'none'; });
+    inner.innerHTML = `
+      <div class="carousel-item active">
+        <div class="carousel-slide slide-summit">
+          <i class="fa fa-triangle-exclamation slide-deco-icon" aria-hidden="true"></i>
+          <div class="slide-center-badge" aria-hidden="true"><i class="fa fa-triangle-exclamation"></i></div>
+          <div class="carousel-caption-over">
+            <h5>Duyurular yüklenemedi.</h5>
+            <p>Lütfen daha sonra tekrar deneyin.</p>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
 // â”€â”€ News cards (3 latest announcements as cards) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadNewsCards() {
   const container = document.getElementById('news-cards');
@@ -554,6 +639,7 @@ loadLabInfo();
 loadPartners();
 loadAnnouncements();
 loadEvents();
+loadFeaturedCarousel();
 loadNewsCards();
 loadResearchAreas();
 loadTeam();

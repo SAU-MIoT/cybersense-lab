@@ -1,2 +1,6 @@
 node_modules/
 .env
+Yeni Metin Belgesi.txt
+DB_MIGRATION_REHBERI.md
+package.json
+package-lock.json
