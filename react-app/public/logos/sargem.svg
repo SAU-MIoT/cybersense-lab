@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="sargem-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00c8e8"/>
+      <stop offset="1" stop-color="#0097b2"/>
+    </linearGradient>
+  </defs>
+  <path d="M60 6 L106 27 v35 c0 28-19 44-46 51 C33 106 14 90 14 62 V27 Z"
+        fill="url(#sargem-g)"/>
+  <path d="M60 14 L99 31 v28 c0 22-14 36-39 43 C36 95 21 81 21 59 V31 Z"
+        fill="#0a1628" fill-opacity="0.25"/>
+  <text x="60" y="74" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif" font-size="46" font-weight="800" fill="#fff">S</text>
+</svg>

@@ -1,0 +1,349 @@
+{
+  "generated_at": "2026-06-29T11:33:53.383Z",
+  "public": [
+    {
+      "schema_name": "public",
+      "table_name": "admin_users",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "announcements",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "arastirma_alanlari",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "content_images",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "ekip",
+      "rows": 8,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "etkinlikler",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "oduller",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "ortaklar",
+      "rows": 2,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "projects",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "site_ayarlari",
+      "rows": 6,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "yayinlar",
+      "rows": 0,
+      "error": null
+    }
+  ],
+  "all_accessible": [
+    {
+      "schema_name": "auth",
+      "table_name": "users",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "identities",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "sessions",
+      "rows": 15,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "refresh_tokens",
+      "rows": 24,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "mfa_factors",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "mfa_challenges",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "mfa_amr_claims",
+      "rows": 15,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "buckets",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "objects",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "s3_multipart_uploads",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "s3_multipart_uploads_parts",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "admin_users",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "audit_log_entries",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "custom_oauth_providers",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "flow_state",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "instances",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "oauth_authorizations",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "oauth_client_states",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "oauth_clients",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "oauth_consents",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "one_time_tokens",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "saml_providers",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "saml_relay_states",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "schema_migrations",
+      "rows": 76,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "sso_domains",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "sso_providers",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "webauthn_challenges",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "auth",
+      "table_name": "webauthn_credentials",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "buckets_analytics",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "buckets_vectors",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "migrations",
+      "rows": 61,
+      "error": null
+    },
+    {
+      "schema_name": "storage",
+      "table_name": "vector_indexes",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "announcements",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "arastirma_alanlari",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "content_images",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "ekip",
+      "rows": 8,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "etkinlikler",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "oduller",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "ortaklar",
+      "rows": 2,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "projects",
+      "rows": 1,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "site_ayarlari",
+      "rows": 6,
+      "error": null
+    },
+    {
+      "schema_name": "public",
+      "table_name": "yayinlar",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "realtime",
+      "table_name": "messages",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "realtime",
+      "table_name": "schema_migrations",
+      "rows": 72,
+      "error": null
+    },
+    {
+      "schema_name": "realtime",
+      "table_name": "subscription",
+      "rows": 0,
+      "error": null
+    },
+    {
+      "schema_name": "vault",
+      "table_name": "secrets",
+      "rows": 0,
+      "error": null
+    }
+  ]
+}
