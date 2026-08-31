@@ -16,7 +16,10 @@ export default function Home() {
   const { data: announcements, isLoading: annLoading } = useAnnouncements(3);
   const { data: team, isLoading: teamLoading } = useTeam(4);
   const { data: publications, isLoading: pubLoading } = usePublications(3);
-  const { data: awards } = useAwards();
+  const { data: awardsData } = useAwards();
+  const awards = awardsData?.items;
+  const awardsCount = awardsData?.count ?? 0;
+  const hasAwards = awardsCount > 0;
 
   return (
     <>
@@ -26,21 +29,21 @@ export default function Home() {
       {/* News & Sidebar */}
       <section id="news" className="py-12 bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className={`grid gap-8 ${hasAwards ? 'lg:grid-cols-3' : ''}`}>
             {/* Main Content - News Cards */}
-            <div className="lg:col-span-2">
+            <div className={hasAwards ? 'lg:col-span-2' : ''}>
               <Reveal>
                 <SectionHeader title="Haberler & Duyurular" />
               </Reveal>
 
               {annLoading && (
-                <div className="grid sm:grid-cols-2 gap-5">
+                <div className={`grid sm:grid-cols-2 gap-5 ${hasAwards ? '' : 'lg:grid-cols-3'}`}>
                   <SkeletonCard /><SkeletonCard />
                 </div>
               )}
               {announcements && announcements.length === 0 && <EmptyState message="Henüz haber bulunmuyor." />}
               {announcements && announcements.length > 0 && (
-                <div className="grid sm:grid-cols-2 gap-5">
+                <div className={`grid sm:grid-cols-2 gap-5 ${hasAwards ? '' : 'lg:grid-cols-3'}`}>
                   {announcements.map((a, i) => (
                     <Reveal key={a.id} delay={i * 0.1}>
                       <Link to="/duyurular" className="block"><NewsCard announcement={a} /></Link>
@@ -58,14 +61,14 @@ export default function Home() {
             </div>
 
             {/* Sidebar - Awards */}
-            <div>
-              <Reveal delay={0.15}>
-                <SectionHeader title="Ödüller & Öne Çıkanlar" />
-              </Reveal>
-              {awards && awards.length > 0 ? (
+            {hasAwards && (
+              <div>
+                <Reveal delay={0.15}>
+                  <SectionHeader title="Ödüller & Öne Çıkanlar" />
+                </Reveal>
                 <Reveal delay={0.2}>
                   <div className="divide-y divide-gray-100 border-t border-gray-100">
-                    {awards.slice(0, 5).map(award => (
+                    {(awards ?? []).slice(0, 5).map(award => (
                       <div key={award.id} className="py-3.5">
                         <div className="flex items-baseline gap-2.5">
                           <span className="text-navy font-bold text-sm shrink-0">{award.year}</span>
@@ -78,10 +81,8 @@ export default function Home() {
                     ))}
                   </div>
                 </Reveal>
-              ) : (
-                <p className="text-gray-400 text-sm text-center py-8">Henüz ödül eklenmemiş.</p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -124,8 +125,8 @@ export default function Home() {
       {/* Publications */}
       <section id="publications" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+          <div className="w-full">
+            <div>
               <Reveal>
                 <SectionHeader tag="Akademik Çıktılar" title="Son Yayınlar" />
               </Reveal>
@@ -154,32 +155,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Contact sidebar */}
-            <div>
-              <Reveal delay={0.15}>
-                <SectionHeader title="İletişim" />
-              </Reveal>
-              <Reveal delay={0.2}>
-                <div className="bg-navy rounded-2xl p-6 text-white/70 text-sm">
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <i className="fa fa-location-dot text-cyan mt-0.5" />
-                      <span>Esentepe, 54050 Serdivan/Sakarya<br />Sakarya Araştırma Geliştirme Merkezi</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <i className="fa fa-envelope text-cyan" />
-                      <a href="mailto:ibutun@sakarya.edu.tr" className="hover:text-cyan transition-colors">
-                        ibutun@sakarya.edu.tr
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <i className="fa fa-phone text-cyan" />
-                      <span>+90 (264) 295 XXXX</span>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
           </div>
         </div>
       </section>

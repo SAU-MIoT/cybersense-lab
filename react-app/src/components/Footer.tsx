@@ -23,14 +23,14 @@ export default function Footer() {
   return (
     <footer className="bg-navy text-white/60">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-3">
               <img
-                src="/logos/sargem.svg"
-                alt="SARGEM CyberSense Laboratuvarı"
-                className="w-11 h-11 rounded-xl object-cover"
+                src="/logos/cybersense-shield.png"
+                alt="CyberSense Laboratuvarı logosu"
+                className="w-11 h-11 rounded-xl object-contain"
               />
               <div>
                 <div className="text-white font-bold text-sm">CyberSense Laboratuvarı</div>
@@ -72,30 +72,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-3 uppercase tracking-wide">İletişim</h4>
-            <div className="space-y-2.5 text-sm">
-              <div className="flex items-start gap-2.5">
-                <i className="fa fa-location-dot text-cyan/70 mt-0.5 shrink-0" />
-                <span>Esentepe, 54050 Serdivan/Sakarya</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <i className="fa fa-envelope text-cyan/70 shrink-0" />
-                <a href="mailto:ibutun@sakarya.edu.tr" className="hover:text-cyan transition-colors">
-                  ibutun@sakarya.edu.tr
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <i className="fa fa-phone text-cyan/70 shrink-0" />
-                <span>+90 (264) 295 XXXX</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <i className="fa fa-clock text-cyan/70 shrink-0" />
-                <span>Pzt – Cum: 09:00 – 17:00</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Bottom */}
@@ -107,7 +83,7 @@ export default function Footer() {
             <a href="https://cs.sakarya.edu.tr/" target="_blank" rel="noopener"
                className="hover:text-cyan transition-colors">Bilgisayar Mühendisliği</a>
             <span className="text-white/20">·</span>
-            <a href="#" className="hover:text-cyan transition-colors">Gizlilik Politikası</a>
+            <Link to="/gizlilik-ve-kvkk" className="hover:text-cyan transition-colors">Gizlilik ve KVKK</Link>
           </div>
         </div>
       </div>

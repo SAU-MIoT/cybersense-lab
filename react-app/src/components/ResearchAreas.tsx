@@ -35,9 +35,18 @@ export default function ResearchAreas() {
             {areas.map((area, i) => (
               <Reveal key={area.id} delay={i * 0.06} className="bg-white">
                 <div className="p-7 hover:bg-gray-50/60 transition-colors h-full">
-                  <div className="w-11 h-11 rounded-xl bg-navy/5 border border-gray-100
+                  <div className="w-14 h-14 rounded-xl bg-navy/5 border border-gray-100
                                 flex items-center justify-center text-cyan">
-                    <LabIcon name={area.icon || 'fa-shield'} className="w-6 h-6" />
+                    {/^https?:\/\//i.test(area.icon || '') ? (
+                      <img
+                        src={area.icon}
+                        alt={`${area.title} görseli`}
+                        className="w-11 h-11 object-contain rounded-lg"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <LabIcon name={area.icon || 'fa-shield'} className="w-8 h-8" />
+                    )}
                   </div>
                   <h3 className="mt-4 text-[15px] font-bold text-navy">{area.title}</h3>
                   {area.description && (

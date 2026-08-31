@@ -25,14 +25,24 @@ export default function TeamCard({ member }: TeamCardProps) {
   // Deterministic color by name for consistency
   const hash = (member.name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const color = AVATAR_COLORS[hash % AVATAR_COLORS.length];
+  const hasProfileImage = /^https?:\/\//i.test(member.avatar_icon || '');
 
   return (
     <div className="group bg-white border border-gray-100 rounded-xl p-6
                     hover:border-gray-200 hover:shadow-lg transition-all duration-300 text-center">
-      {/* Initials avatar */}
+      {/* Profile image or initials fallback */}
       <div className={`mx-auto w-16 h-16 rounded-full bg-gradient-to-br flex items-center justify-center
-                       font-bold text-xl ${color}`}>
-        {initials(member.name)}
+                       font-bold text-xl overflow-hidden ${color}`}>
+        {hasProfileImage ? (
+          <img
+            src={member.avatar_icon}
+            alt={`${member.name} profil fotoğrafı`}
+            className="w-full h-full object-cover object-[center_30%]"
+            loading="lazy"
+          />
+        ) : (
+          initials(member.name)
+        )}
       </div>
 
       {/* Info */}

@@ -1,89 +1,135 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { AdminSession } from '@/types';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-const SESSION_KEY = 'cybersense_admin_session';
+interface AdminProfile {
+  user_id: string;
+  email: string | null;
+  display_name: string | null;
+}
 
 interface AuthContextType {
-  session: AdminSession | null;
+  session: Session | null;
   isAdmin: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  getToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<AdminSession | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const activeToken = useRef<string | null>(null);
+  const validations = useRef(new Map<string, Promise<boolean>>());
+
+  const clearSessionState = useCallback(() => {
+    setSession(null);
+    setAdminProfile(null);
+  }, []);
+
+  const verifyAdmin = useCallback((nextSession: Session): Promise<boolean> => {
+    const token = nextSession.access_token;
+    activeToken.current = token;
+    const pending = validations.current.get(token);
+    if (pending) return pending;
+
+    const validation = (async () => {
+      const { data, error } = await supabase.rpc('admin_me');
+      if (activeToken.current !== token) return false;
+
+      if (error || !data) {
+        activeToken.current = null;
+        clearSessionState();
+        try {
+          await supabase.auth.signOut();
+        } catch (signOutError) {
+          console.error('Yetkisiz oturum kapatılamadı.', signOutError);
+        }
+        return false;
+      }
+
+      setSession(nextSession);
+      setAdminProfile(data as unknown as AdminProfile);
+      return true;
+    })().finally(() => {
+      validations.current.delete(token);
+    });
+
+    validations.current.set(token, validation);
+    return validation;
+  }, [clearSessionState]);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(SESSION_KEY);
-      if (raw) setSession(JSON.parse(raw));
-    } catch { /* ignore */ }
-    setIsLoading(false);
-  }, []);
+    let disposed = false;
 
-  const saveSession = useCallback((s: AdminSession) => {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    setSession(s);
-  }, []);
+    const handleSession = async (nextSession: Session | null) => {
+      if (disposed) return;
+      if (!nextSession) {
+        activeToken.current = null;
+        clearSessionState();
+        setIsLoading(false);
+        return;
+      }
 
-  const clearSession = useCallback(() => {
-    sessionStorage.removeItem(SESSION_KEY);
-    setSession(null);
-  }, []);
+      const token = nextSession.access_token;
+      activeToken.current = token;
+      setIsLoading(true);
+      await verifyAdmin(nextSession);
+      // An unauthorized session clears activeToken before attempting sign-out.
+      // Finish the initial loading state even if that sign-out request fails.
+      if (!disposed && (activeToken.current === token || activeToken.current === null)) {
+        setIsLoading(false);
+      }
+    };
+
+    void supabase.auth.getSession().then(({ data, error }) => {
+      if (disposed) return;
+      if (error) {
+        activeToken.current = null;
+        clearSessionState();
+        setIsLoading(false);
+        return;
+      }
+      void handleSession(data.session);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setTimeout(() => {
+        void handleSession(nextSession);
+      }, 0);
+    });
+
+    return () => {
+      disposed = true;
+      authListener.subscription.unsubscribe();
+    };
+  }, [clearSessionState, verifyAdmin]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    if (!data.session) throw new Error('Oturum oluşturulamadı.');
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (!data.session) throw new Error('Oturum oluşturulamadı.');
 
-    const s: AdminSession = {
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token || '',
-      expires_at: data.session.expires_at ? new Date(data.session.expires_at).getTime() / 1000 : 0,
-      user: data.session.user ? { id: data.session.user.id, email: data.session.user.email || '' } : null,
-    };
-    saveSession(s);
-  }, [saveSession]);
+      const allowed = await verifyAdmin(data.session);
+      if (!allowed) throw new Error('Bu hesabın yönetim paneline erişim yetkisi yok.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [verifyAdmin]);
 
   const signOut = useCallback(async () => {
+    activeToken.current = null;
+    clearSessionState();
     await supabase.auth.signOut();
-    clearSession();
-  }, [clearSession]);
-
-  const getToken = useCallback(async (): Promise<string | null> => {
-    if (!session) return null;
-    const now = Math.floor(Date.now() / 1000);
-    if (session.expires_at && session.expires_at - now < 60) {
-      try {
-        const { data } = await supabase.auth.refreshSession({
-          refresh_token: session.refresh_token,
-        });
-        if (data.session) {
-          const s: AdminSession = {
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token || '',
-            expires_at: data.session.expires_at ? new Date(data.session.expires_at).getTime() / 1000 : 0,
-            user: data.session.user ? { id: data.session.user.id, email: data.session.user.email || '' } : null,
-          };
-          saveSession(s);
-          return s.access_token;
-        }
-      } catch {
-        clearSession();
-        return null;
-      }
-    }
-    return session.access_token;
-  }, [session, saveSession, clearSession]);
+  }, [clearSessionState]);
 
   return (
-    <AuthContext.Provider value={{ session, isAdmin: !!session, isLoading, signIn, signOut, getToken }}>
+    <AuthContext.Provider value={{ session, isAdmin: adminProfile !== null, isLoading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
