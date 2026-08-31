@@ -12,7 +12,7 @@ export default function PartnerLogo({ partner }: { partner: Partner }) {
   const known: Record<string, string> = {
     tubitak: 'logos/tubitak.svg',
     tübitak: 'logos/tubitak.svg',
-    sargem: 'logos/sargem.svg',
+    sargem: 'logos/cybersense-shield.png',
     'sakaryaüniversitesi': 'logos/sakarya-university.svg',
     'sakaryauniversity': 'logos/sakarya-university.svg',
     sau: 'logos/sakarya-university.svg',
