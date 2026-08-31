@@ -3,12 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 const configuredUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const configuredKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
 
-if ((!configuredUrl || !configuredKey) && !import.meta.env.DEV) {
-  throw new Error(
-    'Supabase yapılandırması eksik. VITE_SUPABASE_URL ve VITE_SUPABASE_PUBLISHABLE_KEY değişkenlerini tanımlayın.',
-  );
-}
-
 if (!configuredUrl || !configuredKey) {
   console.warn(
     'Supabase yapılandırması eksik; geliştirme ortamı geçici istemciyle başlatıldı.',
