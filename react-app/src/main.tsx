@@ -7,6 +7,20 @@ import { AuthProvider } from './contexts/AuthContext';
 import App from './App';
 import './index.css';
 
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const redirectParams = new URLSearchParams(window.location.search);
+const redirectPath = redirectParams.get('p');
+
+if (redirectPath) {
+  const routePath = redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`;
+  const query = redirectParams.get('q');
+  window.history.replaceState(
+    null,
+    '',
+    `${basePath}${routePath}${query ? `?${query}` : ''}${window.location.hash}`,
+  );
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -19,7 +33,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename={basePath}>
         <AuthProvider>
           <App />
           <Toaster
