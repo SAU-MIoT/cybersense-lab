@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      (function () {
+        var location = window.location;
+        var base = '/cybersense-lab';
+        if (location.pathname === base || location.pathname.indexOf(base + '/') !== 0) {
+          return;
+        }
+
+        var route = location.pathname.slice(base.length) || '/';
+        var query = location.search.slice(1);
+        var redirect = base + '/?p=' + encodeURIComponent(route) + '&q=' + encodeURIComponent(query);
+        location.replace(redirect + location.hash);
+      })();
+    </script>
+    <title>CyberSense Laboratuvarı</title>
+  </head>
+  <body></body>
+</html>
