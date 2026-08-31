@@ -6,6 +6,7 @@ export const ADMIN_TABLES: AdminTableDef[] = [
     fields: [
       { name: 'title', label: 'Başlık', type: 'text', required: true },
       { name: 'content', label: 'İçerik', type: 'textarea', required: true },
+      { name: 'publish_date', label: 'Yayın Tarihi', type: 'datetime-local' },
       { name: '_images', label: 'Görseller', type: 'image-upload', virtual: true },
       { name: 'is_published', label: 'Yayında', type: 'checkbox', default: true },
     ],
@@ -19,8 +20,7 @@ export const ADMIN_TABLES: AdminTableDef[] = [
       { name: 'funder', label: 'Fon Kaynağı', type: 'text' },
       { name: 'date_range', label: 'Tarih Aralığı', type: 'text' },
       { name: 'progress_pct', label: 'İlerleme (%)', type: 'number', min: 0, max: 100, default: 0 },
-      { name: 'image_url', label: 'Görsel URL', type: 'url' },
-      { name: '_images', label: 'Görseller', type: 'image-upload', virtual: true },
+      { name: 'image_url', label: 'Kapak Görseli', type: 'storage-image' },
       { name: 'github_url', label: 'GitHub URL', type: 'url' },
       { name: 'demo_url', label: 'Demo URL', type: 'url' },
       { name: 'is_published', label: 'Yayında', type: 'checkbox', default: true },
@@ -43,7 +43,7 @@ export const ADMIN_TABLES: AdminTableDef[] = [
       { name: 'name', label: 'Ad Soyad', type: 'text', required: true },
       { name: 'role', label: 'Rol', type: 'text', required: true },
       { name: 'expertise', label: 'Uzmanlık', type: 'text' },
-      { name: 'avatar_icon', label: 'İkon', type: 'text', default: 'fa-user' },
+      { name: 'avatar_icon', label: 'Profil Görseli', type: 'storage-image', default: 'fa-user' },
       { name: 'email', label: 'E-posta', type: 'email' },
       { name: 'linkedin_url', label: 'LinkedIn URL', type: 'url' },
       { name: 'github_url', label: 'GitHub URL', type: 'url' },
@@ -70,7 +70,7 @@ export const ADMIN_TABLES: AdminTableDef[] = [
   {
     id: 'arastirma_alanlari', label: 'Araştırma', icon: 'fa-flask', titleField: 'title',
     fields: [
-      { name: 'icon', label: 'İkon', type: 'text', default: 'fa-shield' },
+      { name: 'icon', label: 'Görsel', type: 'storage-image', default: 'fa-shield' },
       { name: 'title', label: 'Başlık', type: 'text', required: true },
       { name: 'description', label: 'Açıklama', type: 'textarea' },
       { name: 'sort_order', label: 'Sıralama', type: 'number', default: 0 },

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const container = {
@@ -11,8 +12,34 @@ const item = {
 };
 
 export default function Hero() {
+  const [isVideoReady, setIsVideoReady] = useState(false);
+
   return (
-    <section className="relative bg-navy overflow-hidden">
+    <section className="relative isolate bg-navy overflow-hidden">
+      {/* Background video stays centered without manual horizontal or vertical offsets. */}
+      <video
+        className={`absolute inset-0 h-full w-full object-cover object-[center_45%] transition-opacity duration-1000 motion-reduce:hidden ${
+          isVideoReady ? 'opacity-75' : 'opacity-0'
+        }`}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        tabIndex={-1}
+        onCanPlay={() => setIsVideoReady(true)}
+        onError={() => setIsVideoReady(false)}
+      >
+        <source src="/videos/hero-background.mp4" type="video/mp4" />
+      </video>
+
+      {/* Contrast layer keeps the hero copy readable over bright footage. */}
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/65 to-navy/25"
+        aria-hidden="true"
+      />
+
       {/* Subtle grid background */}
       <motion.div
         className="absolute inset-0 opacity-[0.04]"
@@ -35,15 +62,13 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 py-20 lg:py-24">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
-          {/* Left: Content */}
-          <motion.div
-            className="lg:col-span-7"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 lg:py-24">
+        <motion.div
+          className="max-w-3xl"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
             <motion.p variants={item} className="text-cyan text-[11px] font-semibold uppercase tracking-[0.2em] mb-5">
               Sakarya Üniversitesi · Bilgisayar Mühendisliği
             </motion.p>
@@ -75,35 +100,7 @@ export default function Hero() {
                 <i className="fa fa-users text-sm" /> Ekibimiz
               </motion.a>
             </motion.div>
-          </motion.div>
-
-          {/* Right: SARGEM logo card */}
-          <div className="lg:col-span-5 hidden lg:flex justify-center">
-            <motion.div
-              className="relative w-72"
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="aspect-square rounded-3xl bg-gradient-to-br from-navy-light to-navy border border-cyan/15
-                              flex flex-col items-center justify-center shadow-2xl shadow-black/30">
-                {/* Top accent */}
-                <div className="absolute top-6 left-6 right-6 h-px bg-gradient-to-r from-transparent via-cyan/40 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 h-px bg-gradient-to-r from-transparent via-cyan/40 to-transparent" />
-
-                {/* SARGEM logo */}
-                <img
-                  src="/logos/sargem.svg"
-                  alt="SARGEM CyberSense Laboratuvarı logosu"
-                  className="w-28 h-28 drop-shadow-[0_0_24px_rgba(0,200,232,0.35)]"
-                  loading="eager"
-                />
-                <span className="mt-5 text-white text-sm font-bold tracking-wide">SARGEM CyberSense</span>
-                <span className="mt-1 text-white/40 text-[11px] uppercase tracking-[0.25em]">Araştırma Laboratuvarı</span>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

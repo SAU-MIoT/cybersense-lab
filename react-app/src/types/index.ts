@@ -2,6 +2,7 @@ export interface Announcement {
   id: string;
   title: string;
   content: string;
+  publish_date?: string | null;
   created_at: string;
   is_published: boolean;
   images?: ContentImage[];
@@ -112,17 +113,6 @@ export interface PublicCounts {
   partners: number;
 }
 
-export interface AdminSession {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-  user: {
-    id: string;
-    email: string;
-    display_name?: string;
-  } | null;
-}
-
 export interface AdminTableDef {
   id: string;
   label: string;
@@ -134,7 +124,7 @@ export interface AdminTableDef {
 export interface AdminFieldDef {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'url' | 'email' | 'datetime-local' | 'select' | 'checkbox' | 'image-upload';
+  type: 'text' | 'textarea' | 'number' | 'url' | 'email' | 'datetime-local' | 'select' | 'checkbox' | 'image-upload' | 'storage-image';
   required?: boolean;
   default?: unknown;
   options?: string[];

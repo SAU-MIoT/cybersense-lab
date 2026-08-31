@@ -53,3 +53,10 @@ html { scroll-behavior: smooth; }
 ::-webkit-scrollbar-track { @apply bg-gray-100; }
 ::-webkit-scrollbar-thumb { @apply bg-cyan/40 rounded-full; }
 ::-webkit-scrollbar-thumb:hover { @apply bg-cyan/60; }
+
+/* Keep modal content scrollable without letting the scrollbar break rounded corners. */
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hidden::-webkit-scrollbar { display: none; }

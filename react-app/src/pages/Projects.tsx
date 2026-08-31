@@ -80,6 +80,10 @@ export default function Projects() {
               </button>
             </div>
             <div className="p-6">
+              {selected.image_url && (
+                <img src={selected.image_url} alt={selected.title}
+                     className="rounded-xl w-full h-56 object-cover mb-5" />
+              )}
               {/* Images */}
               {selected.images && selected.images.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 mb-5">
@@ -89,11 +93,6 @@ export default function Projects() {
                   ))}
                 </div>
               )}
-              {selected.image_url && !selected.images?.length && (
-                <img src={selected.image_url} alt={selected.title}
-                     className="rounded-xl w-full h-56 object-cover mb-5" />
-              )}
-
               <p className="text-gray-600 text-sm leading-relaxed mb-5">{selected.description}</p>
 
               <div className="grid grid-cols-2 gap-3 text-sm mb-5">

@@ -40,10 +40,10 @@ export default function Navbar() {
               <i className="fa fa-flask text-[10px]" /> SARGEM
             </a>
           </div>
-          <a href="mailto:ibutun@sakarya.edu.tr"
+          <a href="mailto:cybersenselab@gmail.com"
              className="hover:text-cyan transition-colors inline-flex items-center gap-1.5">
             <i className="fa fa-envelope text-[10px]" />
-            <span className="hidden sm:inline">ibutun@sakarya.edu.tr</span>
+            <span className="hidden sm:inline">cybersenselab@gmail.com</span>
           </a>
         </div>
       </div>
@@ -57,15 +57,12 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <Link to="/" className="flex items-center shrink-0 group">
               <img
-                src="/logos/sargem.svg"
-                alt="SARGEM CyberSense"
-                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+                src="/logos/cybersense-laboratory.png"
+                alt="CyberSense Laboratory"
+                className="h-7 sm:h-8 w-auto transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="text-white font-bold text-sm hidden sm:block">
-                CyberSense<span className="text-cyan"> Lab</span>
-              </span>
             </Link>
 
             {/* Desktop Links */}
@@ -103,13 +100,13 @@ export default function Navbar() {
             {/* Right side */}
             <div className="flex items-center gap-3">
               <Link
-                to={isAdmin ? '/admin' : '/login'}
+                to="/iletisim"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg
                            bg-cyan text-navy text-xs font-semibold
                            hover:bg-cyan-dim hover:text-white transition-colors"
               >
-                <i className={`fa ${isAdmin ? 'fa-shield-halved' : 'fa-right-to-bracket'} text-[10px]`} />
-                {isAdmin ? 'Panel' : 'Giriş'}
+                <i className="fa fa-envelope text-[10px]" />
+                İletişim
               </Link>
 
               {/* Mobile toggle */}

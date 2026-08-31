@@ -48,9 +48,15 @@ export function useAnnouncements(limit?: number) {
     queryKey: ['announcements', limit],
     queryFn: async () => {
       const rows = await fetchTable<Announcement>('announcements', q =>
-        q.eq('is_published', true).order('created_at', { ascending: false }).limit(limit || 100)
+        q.eq('is_published', true).order('created_at', { ascending: false }).limit(100)
       );
-      return attachContentImages('announcements', rows);
+      const sorted = [...rows].sort((left, right) => {
+        const leftTime = Date.parse(left.publish_date || left.created_at) || 0;
+        const rightTime = Date.parse(right.publish_date || right.created_at) || 0;
+        return rightTime - leftTime;
+      });
+      const selected = limit ? sorted.slice(0, limit) : sorted;
+      return attachContentImages('announcements', selected);
     },
   });
 }
@@ -115,9 +121,15 @@ export function useResearchAreas() {
 export function useAwards() {
   return useQuery({
     queryKey: ['awards'],
-    queryFn: () => fetchTable<Award>('oduller', q =>
-      q.eq('is_published', true).order('sort_order', { ascending: true })
-    ),
+    queryFn: async () => {
+      const { data, error, count } = await supabase
+        .from('oduller')
+        .select('*', { count: 'exact' })
+        .eq('is_published', true)
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      return { items: (data || []) as Award[], count: count || 0 };
+    },
   });
 }
 

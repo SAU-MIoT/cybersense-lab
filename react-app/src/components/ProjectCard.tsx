@@ -20,9 +20,9 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     >
       {/* Image */}
       <div className="relative h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
-        {(project.images?.[0]?.image_url || project.image_url) ? (
+        {(project.image_url || project.images?.[0]?.image_url) ? (
           <img
-            src={project.images?.[0]?.image_url || project.image_url}
+            src={project.image_url || project.images?.[0]?.image_url}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"

@@ -31,7 +31,7 @@ export default function NewsCard({ announcement, onClick }: NewsCardProps) {
 
       {/* Content */}
       <div className="p-5">
-        <p className="text-[11px] text-gray-400 mb-2">{formatDate(announcement.created_at)}</p>
+        <p className="text-[11px] text-gray-400 mb-2">{formatDate(announcement.publish_date || announcement.created_at)}</p>
         <h3 className="font-semibold text-navy text-[15px] leading-snug mb-1.5 line-clamp-2">
           {announcement.title}
         </h3>
