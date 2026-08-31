@@ -29,11 +29,6 @@ jobs:
           cache: npm
           cache-dependency-path: react-app/package-lock.json
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Install dependencies
         working-directory: react-app
         run: npm ci
