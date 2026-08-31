@@ -10,15 +10,16 @@ export default function PartnerLogo({ partner }: { partner: Partner }) {
 
   // Known downloaded logos
   const known: Record<string, string> = {
-    tubitak: '/logos/tubitak.svg',
-    tübitak: '/logos/tubitak.svg',
-    sargem: '/logos/sargem.svg',
-    'sakaryaüniversitesi': '/logos/sakarya-university.svg',
-    'sakaryauniversity': '/logos/sakarya-university.svg',
-    sau: '/logos/sakarya-university.svg',
+    tubitak: 'logos/tubitak.svg',
+    tübitak: 'logos/tubitak.svg',
+    sargem: 'logos/sargem.svg',
+    'sakaryaüniversitesi': 'logos/sakarya-university.svg',
+    'sakaryauniversity': 'logos/sakarya-university.svg',
+    sau: 'logos/sakarya-university.svg',
   };
 
-  const logo = known[slug];
+  const logoPath = known[slug];
+  const logo = logoPath ? `${import.meta.env.BASE_URL}${logoPath}` : undefined;
   const initial = (name.charAt(0) || '?').toUpperCase();
 
   if (logo) {

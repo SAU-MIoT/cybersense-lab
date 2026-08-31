@@ -31,7 +31,7 @@ export default function Hero() {
         onCanPlay={() => setIsVideoReady(true)}
         onError={() => setIsVideoReady(false)}
       >
-        <source src="/videos/hero-background.mp4" type="video/mp4" />
+        <source src={`${import.meta.env.BASE_URL}videos/hero-background.mp4`} type="video/mp4" />
       </video>
 
       {/* Contrast layer keeps the hero copy readable over bright footage. */}
