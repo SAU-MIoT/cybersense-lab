@@ -59,7 +59,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center shrink-0 group">
               <img
-                src="/logos/cybersense-laboratory.png"
+                src={`${import.meta.env.BASE_URL}logos/cybersense-laboratory.png`}
                 alt="CyberSense Laboratory"
                 className="h-7 sm:h-8 w-auto transition-transform duration-300 group-hover:scale-105"
               />

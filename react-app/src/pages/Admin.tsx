@@ -24,7 +24,9 @@ import {
   uploadTeamMemberImage,
   validateResearchAreaImage,
 } from '@/lib/researchAreaImages';
+import { getInstagramSyncStatus, invokeInstagramSync } from '@/lib/instagramSync';
 import { formatDate, truncate } from '@/lib/utils';
+import type { InstagramSyncStatus, InstagramSyncSummary } from '@/types';
 import toast from 'react-hot-toast';
 
 function errorMessage(error: unknown, fallback: string): string {
@@ -62,6 +64,42 @@ function removeImageForTable(table: string, path: string): Promise<void> {
   return Promise.resolve();
 }
 
+const syncStatusLabels: Record<InstagramSyncSummary['status'], string> = {
+  running: 'Çalışıyor',
+  success: 'Başarılı',
+  partial: 'Kısmi başarı',
+  failed: 'Başarısız',
+  already_running: 'Zaten çalışıyor',
+};
+
+const syncStatusClasses: Record<InstagramSyncSummary['status'], string> = {
+  running: 'bg-blue-100 text-blue-700',
+  success: 'bg-green-100 text-green-700',
+  partial: 'bg-amber-100 text-amber-700',
+  failed: 'bg-red-100 text-red-700',
+  already_running: 'bg-blue-100 text-blue-700',
+};
+
+function syncDate(value?: string | null): string {
+  if (!value) return 'Henüz yok';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('tr-TR', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
+function instagramSourceUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && /(^|\.)instagram\.com$/i.test(url.hostname) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function Admin() {
   const { isAdmin, isLoading: authLoading, session, signOut } = useAuth();
   const navigate = useNavigate();
@@ -75,6 +113,10 @@ export default function Admin() {
   const [saving, setSaving] = useState(false);
   const [pendingImage, setPendingImage] = useState<File | null>(null);
   const [pendingImagePreview, setPendingImagePreview] = useState('');
+  const [instagramStatus, setInstagramStatus] = useState<InstagramSyncStatus | null>(null);
+  const [instagramStatusLoading, setInstagramStatusLoading] = useState(true);
+  const [instagramStatusError, setInstagramStatusError] = useState('');
+  const [instagramSyncing, setInstagramSyncing] = useState(false);
 
   const tableDef = getTableMeta(activeTable);
 
@@ -144,6 +186,52 @@ export default function Admin() {
   useEffect(() => {
     if (isAdmin) loadRecords();
   }, [isAdmin, activeTable, loadRecords]);
+
+  const loadInstagramStatus = useCallback(async () => {
+    setInstagramStatusLoading(true);
+    setInstagramStatusError('');
+    try {
+      setInstagramStatus(await getInstagramSyncStatus(supabase));
+    } catch (err) {
+      setInstagramStatus(null);
+      setInstagramStatusError(errorMessage(err, 'Instagram eşitleme durumu alınamadı.'));
+    } finally {
+      setInstagramStatusLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) void loadInstagramStatus();
+  }, [isAdmin, loadInstagramStatus]);
+
+  const handleInstagramSync = async () => {
+    if (instagramSyncing) return;
+    setInstagramSyncing(true);
+    try {
+      const summary = await invokeInstagramSync(supabase, session?.access_token);
+      if (summary.status === 'success') {
+        toast.success(`Instagram eşitlemesi tamamlandı: ${summary.imported} duyuru aktarıldı.`);
+      } else if (summary.status === 'partial') {
+        toast(`Instagram eşitlemesi kısmen tamamlandı: ${summary.imported} aktarıldı, ${summary.retrying} kayıt yeniden denenecek.`, {
+          icon: '⚠️',
+        });
+      } else if (summary.status === 'already_running' || summary.status === 'running') {
+        toast('Instagram eşitlemesi zaten çalışıyor.', { icon: '⏳' });
+      } else {
+        toast.error(summary.last_error || 'Instagram eşitlemesi başarısız oldu.');
+      }
+
+      if (summary.imported > 0) {
+        await queryClient.invalidateQueries({ queryKey: ['announcements'] });
+        if (activeTable === 'announcements') await loadRecords();
+      }
+    } catch (err) {
+      toast.error(errorMessage(err, 'Instagram eşitlemesi başlatılamadı.'));
+    } finally {
+      await loadInstagramStatus();
+      setInstagramSyncing(false);
+    }
+  };
 
   const handleCreate = () => {
     clearPendingImage();
@@ -300,6 +388,102 @@ export default function Admin() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
+        <section className="bg-white border border-gray-100 rounded-2xl p-5 mb-6" aria-labelledby="instagram-sync-title">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2">
+                <i className="fa-brands fa-instagram text-fuchsia-600" aria-hidden="true" />
+                <h2 id="instagram-sync-title" className="font-bold text-navy">Instagram Eşitleme</h2>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">@{instagramStatus?.account_username || 'cybersenselab'}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void handleInstagramSync()}
+              disabled={instagramSyncing || instagramStatus?.is_running === true || instagramStatusLoading}
+              className="btn-cyber text-xs !py-2.5 !px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i className={`fa ${instagramSyncing ? 'fa-circle-notch fa-spin' : 'fa-arrows-rotate'}`} />
+              {instagramSyncing ? 'Eşitleniyor' : 'Şimdi eşitle'}
+            </button>
+          </div>
+
+          {instagramStatusLoading ? (
+            <div className="mt-5 flex items-center gap-2 text-sm text-gray-400" role="status">
+              <i className="fa fa-circle-notch fa-spin" /> Durum yükleniyor
+            </div>
+          ) : instagramStatusError ? (
+            <div className="mt-5 rounded-xl bg-red-50 px-4 py-3 flex items-center justify-between gap-3" role="alert">
+              <span className="text-sm text-red-700">{instagramStatusError}</span>
+              <button type="button" onClick={() => void loadInstagramStatus()} className="text-xs font-semibold text-red-700 underline">
+                Yeniden dene
+              </button>
+            </div>
+          ) : instagramStatus ? (
+            <>
+              <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <span className="block text-[11px] text-gray-400">Yapılandırma / bağlantı</span>
+                  <span className={`font-semibold ${instagramStatus.configured === null
+                    ? 'text-gray-500'
+                    : instagramStatus.configured && instagramStatus.connected !== false
+                      ? 'text-green-700'
+                      : 'text-red-600'}`}>
+                    {instagramStatus.configured === null
+                      ? 'Sunucu yapılandırması doğrulanmadı'
+                      : !instagramStatus.configured
+                      ? 'Eksik'
+                      : instagramStatus.connected === true
+                        ? 'Hazır · Bağlı'
+                        : instagramStatus.connected === false
+                          ? 'Hazır · Bağlantı hatası'
+                          : 'Hazır · Doğrulanmadı'}
+                  </span>
+                </div>
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <span className="block text-[11px] text-gray-400">Son başarılı çalışma</span>
+                  <span className="font-semibold text-navy">{syncDate(instagramStatus.last_success_at)}</span>
+                </div>
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <span className="block text-[11px] text-gray-400">Son tetikleyici</span>
+                  <span className="font-semibold text-navy">
+                    {instagramStatus.latest_run?.trigger === 'manual' ? 'Manuel' : instagramStatus.latest_run?.trigger === 'cron' ? 'Otomatik' : '—'}
+                  </span>
+                </div>
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <span className="block text-[11px] text-gray-400">Sonuç</span>
+                  {instagramStatus.latest_run ? (
+                    <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold ${syncStatusClasses[instagramStatus.latest_run.status]}`}>
+                      {syncStatusLabels[instagramStatus.latest_run.status]}
+                    </span>
+                  ) : <span className="font-semibold text-gray-400">Henüz yok</span>}
+                </div>
+              </div>
+
+              {instagramStatus.latest_run && (
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-500">
+                  <span>Bulunan: <strong className="text-navy">{instagramStatus.latest_run.discovered}</strong></span>
+                  <span>Aktarılan: <strong className="text-navy">{instagramStatus.latest_run.imported}</strong></span>
+                  <span>Atlanan: <strong className="text-navy">{instagramStatus.latest_run.skipped}</strong></span>
+                  <span>Yeniden denenecek: <strong className="text-navy">{instagramStatus.latest_run.retrying}</strong></span>
+                </div>
+              )}
+
+              {instagramStatus.latest_run?.last_error && (
+                <p className="mt-3 rounded-xl bg-red-50 px-4 py-2 text-xs text-red-700" role="alert">
+                  {instagramStatus.latest_run.last_error}
+                </p>
+              )}
+              {instagramStatus.token_refresh_required && (
+                <p className="mt-3 rounded-xl bg-amber-50 px-4 py-2 text-xs text-amber-800" role="alert">
+                  <i className="fa fa-triangle-exclamation mr-1" /> Instagram erişim tokenı yakında sona erecek
+                  {instagramStatus.token_expires_at ? ` (${syncDate(instagramStatus.token_expires_at)}).` : '.'} Yenileyip Supabase secret değerini güncelleyin.
+                </p>
+              )}
+            </>
+          ) : null}
+        </section>
+
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Tabs */}
           <aside className="lg:w-56 shrink-0">
@@ -365,6 +549,23 @@ export default function Admin() {
                             ${r.is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                             {r.is_published ? 'Yayında' : 'Taslak'}
                           </span>
+                        )}
+                        {activeTable === 'announcements' && r.source_type === 'instagram' && (
+                          instagramSourceUrl(r.source_url) ? (
+                            <a
+                              href={instagramSourceUrl(r.source_url) || undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-fuchsia-50 text-fuchsia-700 hover:bg-fuchsia-100"
+                              onClick={event => event.stopPropagation()}
+                            >
+                              <i className="fa-brands fa-instagram mr-1" />Instagram
+                            </a>
+                          ) : (
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 bg-fuchsia-50 text-fuchsia-700">
+                              <i className="fa-brands fa-instagram mr-1" />Instagram
+                            </span>
+                          )
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-[11px] text-gray-400">

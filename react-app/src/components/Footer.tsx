@@ -28,7 +28,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <img
-                src="/logos/cybersense-shield.png"
+                src={`${import.meta.env.BASE_URL}logos/cybersense-shield.png`}
                 alt="CyberSense Laboratuvarı logosu"
                 className="w-11 h-11 rounded-xl object-contain"
               />

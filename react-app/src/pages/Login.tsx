@@ -35,7 +35,7 @@ export default function Login() {
         {/* Brand */}
         <Link to="/" className="flex items-center justify-center gap-3 mb-8">
           <img
-            src="/logos/sargem.svg"
+            src={`${import.meta.env.BASE_URL}logos/sargem.svg`}
             alt="SARGEM CyberSense Laboratuvarı"
             className="w-10 h-10 rounded-full object-cover"
           />
