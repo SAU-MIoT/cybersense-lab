@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   MAX_RESEARCH_IMAGE_BYTES,
+  isLightNeutralBackgroundPixel,
   projectImagePathFromUrl,
   researchImagePathFromUrl,
   teamMemberImagePathFromUrl,
@@ -8,6 +9,13 @@ import {
 } from './researchAreaImages';
 
 describe('research area image helpers', () => {
+  it('detects baked light checkerboard pixels without removing brand colours', () => {
+    expect(isLightNeutralBackgroundPixel(253, 253, 253)).toBe(true);
+    expect(isLightNeutralBackgroundPixel(235, 240, 238)).toBe(true);
+    expect(isLightNeutralBackgroundPixel(0, 197, 254)).toBe(false);
+    expect(isLightNeutralBackgroundPixel(0, 53, 120)).toBe(false);
+  });
+
   it('accepts supported image files and rejects unsafe types', () => {
     expect(() => validateResearchAreaImage(new File(['image'], 'icon.webp', { type: 'image/webp' }))).not.toThrow();
     expect(() => validateResearchAreaImage(new File(['svg'], 'icon.svg', { type: 'image/svg+xml' }))).toThrow(/JPG/);
