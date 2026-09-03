@@ -70,7 +70,7 @@ export default function Projects() {
       {selected && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
              onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+          <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
                onClick={e => e.stopPropagation()}>
             <div className="sticky top-0 bg-navy text-white p-5 rounded-t-2xl flex items-center justify-between border-b border-cyan/30">
               <h3 className="font-bold text-lg">{selected.title}</h3>
@@ -82,7 +82,7 @@ export default function Projects() {
             <div className="p-6">
               {selected.image_url && (
                 <img src={selected.image_url} alt={selected.title}
-                     className="rounded-xl w-full h-56 object-cover mb-5" />
+                     className="block rounded-xl w-full h-auto max-h-[70vh] object-contain bg-gray-50 mb-5" />
               )}
               {/* Images */}
               {selected.images && selected.images.length > 0 && (
