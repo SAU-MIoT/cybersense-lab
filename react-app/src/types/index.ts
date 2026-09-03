@@ -5,7 +5,44 @@ export interface Announcement {
   publish_date?: string | null;
   created_at: string;
   is_published: boolean;
+  source_type?: string | null;
+  source_external_id?: string | null;
+  source_url?: string | null;
   images?: ContentImage[];
+}
+
+export type InstagramSyncRunStatus =
+  | 'running'
+  | 'success'
+  | 'partial'
+  | 'failed'
+  | 'already_running';
+
+export interface InstagramSyncSummary {
+  status: InstagramSyncRunStatus;
+  discovered: number;
+  imported: number;
+  skipped: number;
+  retrying: number;
+  trigger?: 'cron' | 'manual' | null;
+  started_at?: string | null;
+  finished_at?: string | null;
+  last_error?: string | null;
+}
+
+export interface InstagramSyncStatus {
+  configured: boolean | null;
+  connected?: boolean | null;
+  account_username: string;
+  initial_sync_completed: boolean;
+  last_seen_media_id?: string | null;
+  last_seen_media_timestamp?: string | null;
+  last_success_at?: string | null;
+  token_expires_at?: string | null;
+  token_refresh_required: boolean;
+  is_running: boolean;
+  locked_until?: string | null;
+  latest_run?: InstagramSyncSummary | null;
 }
 
 export interface Project {
