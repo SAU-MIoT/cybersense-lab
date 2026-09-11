@@ -67,7 +67,7 @@ const baseStatus: InstagramSyncStatus = {
 function renderAdmin() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <QueryClientProvider client={queryClient}>
         <Admin />
       </QueryClientProvider>
@@ -146,5 +146,31 @@ describe('Admin Instagram sync card', () => {
     const badge = await screen.findByRole('link', { name: /Instagram/i });
     expect(badge).toHaveAttribute('href', 'https://www.instagram.com/p/example/');
     expect(badge).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('moves an announcement to the events section and opens the destination list', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    mocks.rpc.mockImplementation(async (name: string, args?: Record<string, unknown>) => {
+      if (name === 'admin_list_records' && args?.p_table === 'announcements') {
+        return {
+          data: [{ id: 'announcement-1', title: 'Taşınacak duyuru', content: 'İçerik', is_published: true }],
+          error: null,
+        };
+      }
+      return { data: [], error: null };
+    });
+
+    renderAdmin();
+    await user.click(await screen.findByRole('button', { name: /Etkinliklere taşı/i }));
+
+    await waitFor(() => expect(mocks.rpc).toHaveBeenCalledWith('admin_move_record', {
+      p_source_table: 'announcements',
+      p_id: 'announcement-1',
+      p_target_table: 'etkinlikler',
+    }));
+    expect(await screen.findByRole('heading', { name: 'Etkinlikler' })).toBeInTheDocument();
+    expect(mocks.toastSuccess).toHaveBeenCalledWith('Kayıt artık Etkinlikler bölümünde sergilenecek.');
+    confirmSpy.mockRestore();
   });
 });

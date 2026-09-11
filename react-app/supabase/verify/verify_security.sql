@@ -27,7 +27,7 @@ SELECT 'public_select_policies_cover_both_browser_roles' AS assertion,
   ON p.schemaname='public' AND p.tablename=e.tab AND p.policyname=e.pol AND p.cmd='SELECT' AND p.roles @> ARRAY['anon','authenticated']::name[];
 
 WITH rpc(sig) AS (VALUES ('public.admin_create_record(text,jsonb)'),('public.admin_delete_record(text,text)'),
- ('public.admin_list_record_images(text,uuid[])'),('public.admin_list_records(text)'),('public.admin_me()'),
+ ('public.admin_list_record_images(text,uuid[])'),('public.admin_list_records(text)'),('public.admin_move_record(text,text,text)'),('public.admin_me()'),
  ('public.admin_set_record_images(text,uuid,jsonb)'),('public.admin_update_record(text,text,jsonb)'))
 SELECT 'external_admin_rpcs_are_authenticated_only' AS assertion,
  bool_and(has_function_privilege('authenticated',sig,'EXECUTE') AND NOT has_function_privilege('anon',sig,'EXECUTE')) AS ok FROM rpc;
