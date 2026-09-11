@@ -111,6 +111,7 @@ export default function Admin() {
   const [editing, setEditing] = useState<AdminRecordRow | null>(null);
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
+  const [movingRecordId, setMovingRecordId] = useState<string | null>(null);
   const [pendingImage, setPendingImage] = useState<File | null>(null);
   const [pendingImagePreview, setPendingImagePreview] = useState('');
   const [instagramStatus, setInstagramStatus] = useState<InstagramSyncStatus | null>(null);
@@ -293,6 +294,40 @@ export default function Admin() {
     } catch (err) {
       toast.error(errorMessage(err, 'Silme başarısız.'));
       console.error(err);
+    }
+  };
+
+  const handleMoveDisplaySection = async (record: AdminRecordRow) => {
+    const sourceTable = activeTable;
+    const targetTable = sourceTable === 'announcements' ? 'etkinlikler' : 'announcements';
+    const targetLabel = targetTable === 'etkinlikler' ? 'Etkinlikler' : 'Duyurular';
+    const recordId = typeof record.id === 'string' ? record.id : '';
+    if (!recordId || !['announcements', 'etkinlikler'].includes(sourceTable)) return;
+
+    if (!confirm(`Bu kayıt ${targetLabel} bölümüne taşınacak. Devam etmek istiyor musunuz?`)) return;
+
+    setMovingRecordId(recordId);
+    try {
+      const { error } = await supabase.rpc('admin_move_record', {
+        p_source_table: sourceTable,
+        p_id: recordId,
+        p_target_table: targetTable,
+      });
+      if (error) throw error;
+
+      const queryKeys = [
+        ...publicQueryKeysFor(sourceTable),
+        ...publicQueryKeysFor(targetTable),
+      ];
+      await Promise.all(queryKeys.map(queryKey => queryClient.invalidateQueries({ queryKey })));
+
+      setActiveTable(targetTable);
+      toast.success(`Kayıt artık ${targetLabel} bölümünde sergilenecek.`);
+    } catch (err) {
+      toast.error(errorMessage(err, 'Sergilenecek bölüm değiştirilemedi.'));
+      console.error(err);
+    } finally {
+      setMovingRecordId(null);
     }
   };
 
@@ -574,6 +609,22 @@ export default function Admin() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
+                      {(activeTable === 'announcements' || activeTable === 'etkinlikler') && r.id && (
+                        <button
+                          type="button"
+                          onClick={() => void handleMoveDisplaySection(r)}
+                          disabled={movingRecordId === r.id}
+                          aria-label={activeTable === 'announcements' ? 'Etkinliklere taşı' : 'Duyurulara taşı'}
+                          className="h-8 px-2.5 rounded-lg hover:bg-cyan/10 flex items-center justify-center gap-1.5
+                                     text-[11px] font-semibold text-gray-400 hover:text-cyan transition-all disabled:opacity-50"
+                          title={activeTable === 'announcements' ? 'Etkinliklerde sergile' : 'Duyurularda sergile'}
+                        >
+                          <i className={`fa ${movingRecordId === r.id ? 'fa-circle-notch fa-spin' : 'fa-arrow-right-arrow-left'} text-xs`} />
+                          <span className="hidden sm:inline">
+                            {activeTable === 'announcements' ? 'Etkinliklere taşı' : 'Duyurulara taşı'}
+                          </span>
+                        </button>
+                      )}
                       <button onClick={() => handleEdit(r)}
                               className="w-8 h-8 rounded-lg hover:bg-cyan/10 flex items-center justify-center text-gray-400 hover:text-cyan transition-all"
                               title="Düzenle">

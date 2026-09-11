@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import NotFound from './pages/NotFound';
 
 const Home = lazy(() => import('./pages/Home'));
 const Team = lazy(() => import('./pages/Team'));
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/gizlilik-ve-kvkk" element={<Privacy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
